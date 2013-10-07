@@ -1,0 +1,4 @@
+EfCodeFirstVersionedProperties
+==============================
+
+## Work in progress
