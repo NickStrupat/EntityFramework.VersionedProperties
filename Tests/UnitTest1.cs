@@ -6,7 +6,9 @@ namespace EfCodeFirstVersionedProperties.Tests {
         [TestMethod]
         public void TestMethod1() {
             using (var context = new Context()) {
-                var person = new Person { FirstName = new VersionedString { Value = "Nick" } };
+                var person = new Person("Nick", "Strupat");
+                context.People.Add(person);
+                person.FirstName.v
             }
         }
     }

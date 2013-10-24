@@ -10,7 +10,7 @@ namespace EfCodeFirstVersionedProperties.Tests {
 
         public Person(String firstName, String lastName) {
             FirstName = new VersionedString { Value = firstName };
-            LastName = new VersionedString { Value = lastName }; ;
+            LastName = new VersionedString { Value = lastName };
         }
     }
 }
