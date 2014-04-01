@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace EfCodeFirstVersionedProperties.Tests {
+namespace EntityFrameworkVersionedProperties.Tests {
     [TestClass]
     public class UnitTest1 {
         [TestMethod]
@@ -10,6 +10,7 @@ namespace EfCodeFirstVersionedProperties.Tests {
                 var person = new Person("Nick", "Strupat");
                 context.People.Add(person);
                 person.FirstName.Value = String.Empty;
+                context.SaveChanges();
             }
         }
     }

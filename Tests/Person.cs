@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using EntityFrameworkVersionedProperties;
 
-namespace EfCodeFirstVersionedProperties.Tests {
+namespace EntityFrameworkVersionedProperties.Tests {
     public class Person {
         [Key]
         public Int64 Id { get; protected set; }
