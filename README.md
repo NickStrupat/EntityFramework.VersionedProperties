@@ -1,4 +1,4 @@
-EfCodeFirstVersionedProperties
-==============================
+EntityFrameworkVersionedProperties
+==================================
 
 ## Work in progress

@@ -17,7 +17,7 @@ namespace EfCodeFirstVersionedProperties {
     }
 
     public static class VersionedStringExtensions {
-        public static void SetCurrentValue(this VersionedString , String currentValue) {
+        public static void SetCurrentValue(this VersionedString versionedString, String currentValue) {
             
         }
     }
