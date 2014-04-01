@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedNullableBoolean : VersionedBase<VersionedNullableBooleanVersion, Boolean?> { }
 
     public class VersionedNullableBooleanVersion : VersionBase<Boolean?> {

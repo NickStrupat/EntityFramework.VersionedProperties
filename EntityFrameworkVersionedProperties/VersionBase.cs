@@ -1,10 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public abstract class VersionBase<T> {
         /// <summary>
         /// Scalar properties

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfCodeFirstVersionedProperties", "EfCodeFirstVersionedProperties\EfCodeFirstVersionedProperties.csproj", "{3C39669F-F9EE-480A-AFD4-84E547FA539D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkVersionedProperties", "EntityFrameworkVersionedProperties\EntityFrameworkVersionedProperties.csproj", "{3C39669F-F9EE-480A-AFD4-84E547FA539D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C66001A8-91AD-421F-BA65-F783E94E301B}"
 EndProject

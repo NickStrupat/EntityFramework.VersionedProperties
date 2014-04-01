@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedNullableDouble : VersionedBase<VersionedNullableDoubleVersion, Double?> { }
 
     public class VersionedNullableDoubleVersion : VersionBase<Double?> {

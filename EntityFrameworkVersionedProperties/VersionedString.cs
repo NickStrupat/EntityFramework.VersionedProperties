@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedString : VersionedBase<VersionedStringVersion, String> { }
 
     public class VersionedStringVersion : VersionBase<String> {
@@ -17,7 +17,7 @@ namespace EfCodeFirstVersionedProperties {
     }
 
     public static class VersionedStringExtensions {
-        public static void SetCurrentValue(this VersionedString , String currentValue) {
+        public static void SetCurrentValue(this VersionedString versionedString, String currentValue) {
             
         }
     }

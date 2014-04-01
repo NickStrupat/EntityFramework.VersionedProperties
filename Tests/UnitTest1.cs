@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EfCodeFirstVersionedProperties.Tests {
     [TestClass]
@@ -8,7 +9,7 @@ namespace EfCodeFirstVersionedProperties.Tests {
             using (var context = new Context()) {
                 var person = new Person("Nick", "Strupat");
                 context.People.Add(person);
-                person.FirstName.v
+                person.FirstName.Value = String.Empty;
             }
         }
     }

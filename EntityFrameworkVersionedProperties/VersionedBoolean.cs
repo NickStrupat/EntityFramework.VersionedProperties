@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedBoolean : VersionedBase<VersionedBooleanVersion, Boolean> { }
 
     public class VersionedBooleanVersion : VersionBase<Boolean> {

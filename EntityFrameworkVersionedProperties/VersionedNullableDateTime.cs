@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedNullableDateTime : VersionedBase<VersionedNullableDateTimeVersion, DateTime?> { }
 
     public class VersionedNullableDateTimeVersion : VersionBase<DateTime?> {

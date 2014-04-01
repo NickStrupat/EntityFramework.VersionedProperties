@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using EntityFrameworkVersionedProperties;
 
 namespace EfCodeFirstVersionedProperties.Tests {
     public class Person {

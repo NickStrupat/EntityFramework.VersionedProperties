@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public abstract class VersionedBase<TVersion, TBase>
         where TVersion : VersionBase<TBase>, new() {
         /// <summary>

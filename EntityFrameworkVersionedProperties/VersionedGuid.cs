@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedGuid : VersionedBase<VersionedGuidVersion, Guid> { }
 
     public class VersionedGuidVersion : VersionBase<Guid> {

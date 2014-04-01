@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedDecimal : VersionedBase<VersionedDecimalVersion, Decimal> { }
 
     public class VersionedDecimalVersion : VersionBase<Decimal> {

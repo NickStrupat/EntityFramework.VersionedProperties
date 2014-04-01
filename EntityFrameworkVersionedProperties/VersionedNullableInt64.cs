@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EfCodeFirstVersionedProperties {
+namespace EntityFrameworkVersionedProperties {
     public class VersionedNullableInt64 : VersionedBase<VersionedNullableInt64Version, Int64?> { }
 
     public class VersionedNullableInt64Version : VersionBase<Int64?> {
