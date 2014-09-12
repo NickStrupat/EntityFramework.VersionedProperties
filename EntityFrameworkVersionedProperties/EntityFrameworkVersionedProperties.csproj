@@ -35,14 +35,17 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFrameworkTriggers">
-      <HintPath>..\packages\EntityFrameworkTriggers.1.0.1.0\lib\net451\EntityFrameworkTriggers.dll</HintPath>
+    <Reference Include="EntityFrameworkTriggers, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFrameworkTriggers.1.2.0.0\lib\net451\EntityFrameworkTriggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -54,25 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
+    <Compile Include="IVersionable.cs" />
+    <Compile Include="IVersionableDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VersionBase.cs" />
-    <Compile Include="VersionedBase.cs" />
-    <Compile Include="VersionedBoolean.cs" />
-    <Compile Include="VersionedDateTime.cs" />
-    <Compile Include="VersionedDecimal.cs" />
-    <Compile Include="VersionedDouble.cs" />
-    <Compile Include="VersionedGuid.cs" />
-    <Compile Include="VersionedInt32.cs" />
-    <Compile Include="VersionedInt64.cs" />
-    <Compile Include="VersionedNullableBoolean.cs" />
-    <Compile Include="VersionedNullableDateTime.cs" />
-    <Compile Include="VersionedNullableDecimal.cs" />
-    <Compile Include="VersionedNullableDouble.cs" />
-    <Compile Include="VersionedNullableGuid.cs" />
-    <Compile Include="VersionedNullableInt32.cs" />
-    <Compile Include="VersionedNullableInt64.cs" />
-    <Compile Include="VersionedNullableString.cs" />
-    <Compile Include="VersionedString.cs" />
+    <Compile Include="Versionable.cs" />
+    <Compile Include="VersionableDbContext.cs" />
+    <Compile Include="Versioneds.cs" />
+    <Compile Include="Versions.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

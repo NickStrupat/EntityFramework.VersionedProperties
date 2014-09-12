@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace EntityFrameworkVersionedProperties {
-    public abstract class VersionBase<T> {
+    public abstract class VersionedVersionBase<T> {
         /// <summary>
         /// Scalar properties
         /// </summary>
@@ -19,20 +19,20 @@ namespace EntityFrameworkVersionedProperties {
         /// Constructors
         /// </summary>
         
-        protected VersionBase() {
+        protected VersionedVersionBase() {
             CreationDateTime = DateTime.Now;
         }
 
-        protected VersionBase(T value)
+        protected VersionedVersionBase(T value)
             : this() {
             Value = value;
         }
     }
 
-    public static class Extensions {
-        public static IQueryable<T> Values<TVersion, T>(this IQueryable<VersionedBase<TVersion, T>> versioneds)
-            where TVersion : VersionBase<T>, new() {
-                return versioneds.Select(x => x.Versions.OrderByDescending(y => y.CreationDateTime).FirstOrDefault().Value);
-        }
-    }
+	//public static class Extensions {
+	//	public static IQueryable<T> Values<TVersion, T>(this IQueryable<VersionedBase<TVersion, T>> versioneds)
+	//		where TVersion : VersionedVersionBase<T>, new() {
+	//			return versioneds.Select(x => x.Versions.OrderByDescending(y => y.CreationDateTime).FirstOrDefault().Value);
+	//	}
+	//}
 }
