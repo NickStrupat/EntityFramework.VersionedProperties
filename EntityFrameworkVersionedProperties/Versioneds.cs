@@ -30,6 +30,7 @@ namespace EntityFrameworkVersionedProperties {
 		protected VersionedBase() {
 			value = DefaultValue;
 		}
+		internal Action VerionAction;
 	}
 	public abstract class NullableVersionedBase<T> : VersionedBase<T> {
 	}

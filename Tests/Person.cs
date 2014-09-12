@@ -1,17 +1,16 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Spatial;
 
 namespace EntityFrameworkVersionedProperties.Tests {
-    public class Person : IVersionable<Person> {
+    public class Person : IVersionable<Person, Context> {
         [Key]
         public Int64 Id { get; protected set; }
 		public VersionedString FirstName { get; protected set; }
 		public VersionedString LastName { get; protected set; }
-		public VersionedDbGeometry Location { get; set; }
+		public VersionedDbGeography Location { get; set; }
 
 		public Person() {
-			this.InitializeVerionedProperties();
+			this.InitializeVersionedProperties();
 	    }
         public Person(String firstName, String lastName) : this() {
 	        FirstName.Value = firstName;
