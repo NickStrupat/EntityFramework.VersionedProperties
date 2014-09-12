@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameworkVersionedProperties.Tests {
-    public class Person : IVersionable<Person, Context> {
+    public class Person : IVersionable<Person> {
         [Key]
         public Int64 Id { get; protected set; }
 		public VersionedString FirstName { get; protected set; }

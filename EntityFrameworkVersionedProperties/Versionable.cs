@@ -1,8 +1,7 @@
-﻿using System.Data.Entity;
-using EntityFrameworkTriggers;
+﻿using EntityFrameworkTriggers;
 
 namespace EntityFrameworkVersionedProperties {
-	class Versionable<T, TDbContext> : IVersionable<T, TDbContext> where T : class, IVersionable<T, TDbContext>, ITriggerable<T>, new() where TDbContext : DbContext {
+	class Versionable<T> : IVersionable<T> where T : class, IVersionable<T>, ITriggerable<T>, new() {
 		protected Versionable() {
 			this.InitializeVersionedProperties();
 		} 

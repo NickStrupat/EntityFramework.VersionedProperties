@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity.Spatial;
+﻿using EntityFrameworkTriggers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EntityFrameworkVersionedProperties.Tests {
@@ -13,7 +12,9 @@ namespace EntityFrameworkVersionedProperties.Tests {
 				//person.Location = DbGeometry.FromText("POINT(53.095124 -0.864716)");
                 context.People.Add(person);
                 //person.FirstName.Value = String.Empty;
-                context.SaveChanges();
+                context.SaveChangesWithTriggers();
+	            context.People.Remove(person);
+	            context.SaveChangesWithTriggers();
             }
         }
     }
