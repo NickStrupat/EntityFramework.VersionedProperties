@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 
 namespace EntityFrameworkVersionedProperties {
-	public interface IVersionableDbContext<TDbContext> where TDbContext : DbContext {
+	public interface IVersionableDbContext {
 		IDbSet<BooleanVersion> BooleanVersions { get; set; }
 		IDbSet<DateTimeVersion> DateTimeVersions { get; set; }
 		IDbSet<DateTimeOffsetVersion> DateTimeOffsetVersions { get; set; }

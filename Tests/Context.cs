@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 
 namespace EntityFrameworkVersionedProperties.Tests {
-    public class Context : DbContext, IVersionableDbContext<Context> {
+    public class Context : DbContext, IVersionableDbContext {
         public DbSet<Person> People { get; set; }
 
 	    public IDbSet<BooleanVersion> BooleanVersions { get; set; }
