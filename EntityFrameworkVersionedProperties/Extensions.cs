@@ -64,10 +64,6 @@ namespace EntityFrameworkVersionedProperties {
 		}
 		private static void OnInsertedOrUpdated<TVersionable>(Triggers<TVersionable>.Entry e)
 			where TVersionable : class, IVersionable<TVersionable>, ITriggerable<TVersionable>, new() {
-			//var mappings = (from versionedPropertyInfo in getVersionablePropertyInfos(e.Entity)
-			//				from versionPropertyInfo in getVersionedPropertyInfos(e.Context)
-			//				where versionPropertyInfo.PropertyType.GenericTypeArguments.Single() == versionedPropertyInfo.PropertyType.BaseType.GenericTypeArguments[1]
-			//				select new Mapping { VersionedProperty = versionedPropertyInfo, Versions = versionPropertyInfo }).ToArray();
 			foreach (var mapping in getMappings(e.Entity, e.Context)) {
 				var versionedProperty = mapping.VersionedProperty.GetValue(e.Entity);
 				var versionedVersionsPropertyInfo = mapping.VersionedProperty.PropertyType.GetField("Versions", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -87,7 +83,8 @@ namespace EntityFrameworkVersionedProperties {
 				var versionedProperty = mapping.VersionedProperty.GetValue(e.Entity);
 				var versionParameter = Expression.Parameter(mapping.Versions.PropertyType.GenericTypeArguments.Single(), "version");
 				var versionVersionedIdProperty = Expression.Property(versionParameter, "VersionedId");
-				var versionedIdProperty = Expression.Constant(mapping.VersionedProperty.PropertyType.GetProperty("Id").GetValue(versionedProperty), typeof(Guid));
+				var versionedPropertyId = mapping.VersionedProperty.PropertyType.GetProperty("Id").GetValue(versionedProperty);
+				var versionedIdProperty = Expression.Constant(versionedPropertyId, typeof(Guid));
 				var equal = Expression.Equal(versionVersionedIdProperty, versionedIdProperty);
 				var whereExpression = Expression.Lambda(equal, versionParameter);
 				var whereGenericMethodInfo = whereMethodInfo.MakeGenericMethod(mapping.Versions.PropertyType.GenericTypeArguments.Single());
