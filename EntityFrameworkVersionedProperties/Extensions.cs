@@ -58,11 +58,11 @@ namespace EntityFrameworkVersionedProperties {
 			}
 			var versionableInstance = (TVersionable) versionable;
 			var triggers = versionableInstance.Triggers();
-			triggers.Inserted += OnInsertedOrUpdated;
-			triggers.Updated += OnInsertedOrUpdated;
-			triggers.Deleted += OnDeleted;
+			triggers.Inserting += OnInsertingOrUpdating;
+			triggers.Updating += OnInsertingOrUpdating;
+			triggers.Deleting += OnDeleting;
 		}
-		private static void OnInsertedOrUpdated<TVersionable>(Triggers<TVersionable>.Entry e)
+		private static void OnInsertingOrUpdating<TVersionable>(Triggers<TVersionable>.Entry e)
 			where TVersionable : class, IVersionable<TVersionable>, ITriggerable<TVersionable>, new() {
 			foreach (var mapping in getMappings(e.Entity, e.Context)) {
 				var versionedProperty = mapping.VersionedProperty.GetValue(e.Entity);
@@ -76,7 +76,7 @@ namespace EntityFrameworkVersionedProperties {
 		}
 		private static readonly MethodInfo deleteMethodInfo = typeof(BatchExtensions).GetMethods().Single(x => x.Name == "Delete" && x.GetParameters().Count() == 1 && typeof(IQueryable).IsAssignableFrom(x.GetParameters().Single().ParameterType));
 		private static readonly MethodInfo whereMethodInfo = typeof(Queryable).GetMethods().Single(x => x.Name == "Where" && x.GetParameters().Count() == 2 && typeof(IQueryable).IsAssignableFrom(x.GetParameters()[0].ParameterType) && typeof(LambdaExpression).IsAssignableFrom(x.GetParameters()[1].ParameterType) && x.GetParameters()[1].ParameterType.GenericTypeArguments.Single().GenericTypeArguments.Count() == 2);
-		private static void OnDeleted<TVersionable>(Triggers<TVersionable>.Entry e)
+		private static void OnDeleting<TVersionable>(Triggers<TVersionable>.Entry e)
 			where TVersionable : class, IVersionable<TVersionable>, ITriggerable<TVersionable>, new() {
 			foreach (var mapping in getMappings(e.Entity, e.Context)) {
 				var dbSet = mapping.Versions.GetValue(e.Context);
