@@ -7,18 +7,18 @@ using System.Data.Entity.Spatial;
 namespace EntityFrameworkVersionedProperties {
 	internal interface IVersioned { }
 
-	public abstract class VersionedBase<T, TVersion> : IVersioned
-		where TVersion : VersionBase<T>, new()
+	public abstract class VersionedBase<TValue, TVersion> : IVersioned
+		where TVersion : VersionBase<TValue>, new()
 	{
 		public Guid Id { get; internal set; }
 		public DateTime Modified { get; internal set; }
-		private T value;
-		public virtual T Value {
+		private TValue value;
+		public virtual TValue Value {
 			get { return value; }
 			set {
-				if (!(this is NullableVersionedBase<T, TVersion>) && value == null)
+				if (!(this is NullableVersionedBase<TValue, TVersion>) && value == null)
 					throw new ArgumentNullException("value");
-				if (EqualityComparer<T>.Default.Equals(this.value, value))
+				if (EqualityComparer<TValue>.Default.Equals(this.value, value))
 					return;
 				Modified = DateTime.Now;
 				if (Id == Guid.Empty)
@@ -28,14 +28,14 @@ namespace EntityFrameworkVersionedProperties {
 				this.value = value;
 			}
 		}
-		protected virtual T DefaultValue {
-			get { return default(T); }
+		protected virtual TValue DefaultValue {
+			get { return default(TValue); }
 		}
 		protected VersionedBase() {
 			Modified = DateTime.Now;
 			value = DefaultValue;
 		}
-		protected readonly List<TVersion> Versions = new List<TVersion>();
+		internal readonly List<TVersion> Versions = new List<TVersion>();
 	}
 
 	public abstract class NullableVersionedBase<T, TVersion> : VersionedBase<T, TVersion> where TVersion : VersionBase<T>, new() {}
@@ -60,9 +60,8 @@ namespace EntityFrameworkVersionedProperties {
 			set { base.Value = value; }
 		}
 		protected override DbGeography DefaultValue {
-			get { return empty; }
+			get { return DbGeography.FromText("POINT EMPTY"); }
 		}
-		private static readonly DbGeography empty = DbGeography.FromText("POINT EMPTY");
 	}
 
 	[ComplexType]
@@ -73,9 +72,8 @@ namespace EntityFrameworkVersionedProperties {
 			set { base.Value = value; }
 		}
 		protected override DbGeometry DefaultValue {
-			get { return empty; }
+			get { return DbGeometry.FromText("POINT EMPTY"); }
 		}
-		private static readonly DbGeometry empty = DbGeometry.FromText("POINT EMPTY");
 	}
 
 	[ComplexType]

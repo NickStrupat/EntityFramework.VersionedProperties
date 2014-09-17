@@ -42,13 +42,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework.Extended, Version=6.0.0.0, Culture=neutral, PublicKeyToken=05b7e29bdd433584, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.Extended.6.1.0.121\lib\net45\EntityFramework.Extended.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="EntityFrameworkTriggers, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFrameworkTriggers.1.2.0.0\lib\net451\EntityFrameworkTriggers.dll</HintPath>
+      <HintPath>..\packages\EntityFrameworkTriggers.2.0.0.0\lib\net451\EntityFrameworkTriggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -67,12 +70,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Context.cs" />
-    <Compile Include="Migrations\201409112317459_InitialCreate.cs" />
-    <Compile Include="Migrations\201409112317459_InitialCreate.Designer.cs">
-      <DependentUpon>201409112317459_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="ContextWithVersionedProperties.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,11 +84,6 @@
       <Project>{3C39669F-F9EE-480A-AFD4-84E547FA539D}</Project>
       <Name>EntityFrameworkVersionedProperties</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201409112317459_InitialCreate.resx">
-      <DependentUpon>201409112317459_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

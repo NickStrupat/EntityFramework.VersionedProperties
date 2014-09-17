@@ -5,12 +5,12 @@ using System.Data.Entity.Spatial;
 
 namespace EntityFrameworkVersionedProperties {
 	internal interface IVersion {}
-	public abstract class VersionBase<T> : IVersion {
+	public abstract class VersionBase<TValue> : IVersion {
 		public Int64 Id { get; internal set; }
 		[Index]
 		public Guid VersionedId { get; internal set; }
 		public DateTime Added { get; internal set; }
-		public virtual T Value { get; internal set; }
+		public virtual TValue Value { get; internal set; }
 	}
 
 	public sealed class BooleanVersion : VersionBase<Boolean> {}
