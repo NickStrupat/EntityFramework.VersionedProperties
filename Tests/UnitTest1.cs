@@ -4,7 +4,7 @@ using System.Linq;
 using EntityFrameworkTriggers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace EntityFrameworkVersionedProperties.Tests {
+namespace EntityFramework.VersionedProperties.Tests {
     [TestClass]
     public class UnitTest1 {
         [TestMethod]

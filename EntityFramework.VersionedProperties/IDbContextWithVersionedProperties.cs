@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace EntityFrameworkVersionedProperties {
+namespace EntityFramework.VersionedProperties {
 	public interface IDbContextWithVersionedProperties {
 		DbSet<BooleanVersion> BooleanVersions { get; set; }
 		DbSet<DateTimeVersion> DateTimeVersions { get; set; }

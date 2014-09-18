@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Spatial;
 
-namespace EntityFrameworkVersionedProperties {
+namespace EntityFramework.VersionedProperties {
 	internal interface IVersioned { }
 
 	public abstract class VersionedBase<TValue, TVersion> : IVersioned

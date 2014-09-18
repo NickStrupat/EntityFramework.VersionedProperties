@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using EntityFrameworkTriggers;
 
-namespace EntityFrameworkVersionedProperties.Tests {
+namespace EntityFramework.VersionedProperties.Tests {
     public class Person : IVersionedProperties<Person> {
         [Key]
         public Int64 Id { get; protected set; }

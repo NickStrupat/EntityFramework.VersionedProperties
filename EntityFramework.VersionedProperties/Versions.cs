@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Spatial;
 
-namespace EntityFrameworkVersionedProperties {
+namespace EntityFramework.VersionedProperties {
 	internal interface IVersion {}
 	public abstract class VersionBase<TValue> : IVersion {
 		public Int64 Id { get; internal set; }

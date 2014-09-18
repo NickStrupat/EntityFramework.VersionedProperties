@@ -6,7 +6,7 @@ using EntityFramework.Extensions;
 using EntityFrameworkTriggers;
 using System.Reflection;
 
-namespace EntityFrameworkVersionedProperties {
+namespace EntityFramework.VersionedProperties {
 	public static class Extensions {
 		private static T ThrowIfNull<T>(this T @object) where T : class {
 			if (@object == null)

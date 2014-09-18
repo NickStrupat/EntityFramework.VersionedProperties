@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace EntityFrameworkVersionedProperties.Tests {
+namespace EntityFramework.VersionedProperties.Tests {
     public class Context : DbContext, IDbContextWithVersionedProperties {
         public DbSet<Person> People { get; set; }
 

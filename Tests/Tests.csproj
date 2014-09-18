@@ -6,7 +6,7 @@
     <ProjectGuid>{C66001A8-91AD-421F-BA65-F783E94E301B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EntityFrameworkVersionedProperties.Tests</RootNamespace>
+    <RootNamespace>EntityFramework.VersionedProperties.Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -80,7 +80,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkVersionedProperties\EntityFramework.VersionedProperties.csproj">
+    <ProjectReference Include="..\EntityFramework.VersionedProperties\EntityFramework.VersionedProperties.csproj">
       <Project>{3C39669F-F9EE-480A-AFD4-84E547FA539D}</Project>
       <Name>EntityFramework.VersionedProperties</Name>
     </ProjectReference>
