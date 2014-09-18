@@ -1,4 +1,4 @@
-EntityFrameworkVersionedProperties
+EntityFramework.VersionedProperties
 ==================================
 
 ## Work in progress
