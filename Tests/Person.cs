@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using EntityFrameworkTriggers;
+using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties.Tests {
     public class Person : IVersionedProperties<Person> {

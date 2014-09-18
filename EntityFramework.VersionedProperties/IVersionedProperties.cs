@@ -1,4 +1,4 @@
-﻿using EntityFrameworkTriggers;
+﻿using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties {
 	/// <summary>

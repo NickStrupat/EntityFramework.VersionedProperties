@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EfCodeFirstVersionedProperties")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("EntityFramework.VersionedProperties")]
+[assembly: AssemblyDescription("Add automatic property versioning to entity framework")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("EfCodeFirstVersionedProperties")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyProduct("EntityFramework.VersionedProperties")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
