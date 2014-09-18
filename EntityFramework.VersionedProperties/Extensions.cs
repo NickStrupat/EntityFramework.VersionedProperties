@@ -68,6 +68,24 @@ namespace EntityFramework.VersionedProperties {
 			return mappings;
 		}
 
+		/// <summary>
+		/// Initialize all versioned properties in this object. This should be the called before doing anything to the versioned properties (at the beginning of the constructor, for example)
+		/// </summary>
+		/// <typeparam name="TVersionedProperties"></typeparam>
+		/// <param name="versionedProperties"></param>
+		/// <example>
+		/// <code>
+		///		class Person : IVersionedProperties&lt;Person&gt; {
+		///			public String Name { get; set; }
+		///			public VersionedString NickName { get; set; }
+		///			public Person(String name, String nickName) {
+		///				this.InitializeVersionedProperties();
+		///				Name = name;
+		///				NickName.Value = nickName;
+		///			}
+		///		}
+		/// </code>
+		/// </example>
 		public static void InitializeVersionedProperties<TVersionedProperties>(this IVersionedProperties<TVersionedProperties> versionedProperties)
 			where TVersionedProperties : class, IVersionedProperties<TVersionedProperties>, ITriggerable<TVersionedProperties>, new() {
 			var versionedPropertyInfos = GetVersionedPropertiesPropertyInfos(versionedProperties);

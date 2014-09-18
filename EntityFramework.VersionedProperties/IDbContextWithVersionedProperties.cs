@@ -1,6 +1,9 @@
 ﻿using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
+	/// <summary>
+	/// Inherit from this interface to enable versioned properties in your DbContext. You must call <c>dbContext.SaveChangesWithTriggers()</c> or <c>await dbContext.SaveChangesWithTriggersAsync()</c> to use versioned properties.
+	/// </summary>
 	public interface IDbContextWithVersionedProperties {
 		DbSet<BooleanVersion> BooleanVersions { get; set; }
 		DbSet<DateTimeVersion> DateTimeVersions { get; set; }
