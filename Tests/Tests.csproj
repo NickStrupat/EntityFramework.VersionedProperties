@@ -80,9 +80,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkVersionedProperties\EntityFrameworkVersionedProperties.csproj">
+    <ProjectReference Include="..\EntityFrameworkVersionedProperties\EntityFramework.VersionedProperties.csproj">
       <Project>{3C39669F-F9EE-480A-AFD4-84E547FA539D}</Project>
-      <Name>EntityFrameworkVersionedProperties</Name>
+      <Name>EntityFramework.VersionedProperties</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -7,8 +7,8 @@
     <ProjectGuid>{3C39669F-F9EE-480A-AFD4-84E547FA539D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EntityFrameworkVersionedProperties</RootNamespace>
-    <AssemblyName>EntityFrameworkVersionedProperties</AssemblyName>
+    <RootNamespace>EntityFramework.VersionedProperties</RootNamespace>
+    <AssemblyName>EntityFramework.VersionedProperties</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
