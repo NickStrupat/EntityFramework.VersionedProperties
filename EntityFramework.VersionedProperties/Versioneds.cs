@@ -40,37 +40,30 @@ namespace EntityFramework.VersionedProperties {
 
 	public abstract class NullableVersionedBase<T, TVersion> : VersionedBase<T, TVersion> where TVersion : VersionBase<T>, new() {}
 
-	[ComplexType]
-	public class VersionedString : VersionedBase<String, StringVersion> {
+	public abstract class RequiredValueVersionedBase<TValue, TVersion> : VersionedBase<TValue, TVersion> where TVersion : VersionBase<TValue>, new() {
 		[Required]
-		public override String Value {
+		public override TValue Value {
 			get { return base.Value; }
 			set { base.Value = value; }
 		}
+	}
+
+	[ComplexType]
+	public class VersionedString : RequiredValueVersionedBase<String, StringVersion> {
 		protected override String DefaultValue {
 			get { return String.Empty; }
 		}
 	}
 
 	[ComplexType]
-	public class VersionedDbGeography : VersionedBase<DbGeography, DbGeographyVersion> {
-		[Required]
-		public override DbGeography Value {
-			get { return base.Value; }
-			set { base.Value = value; }
-		}
+	public class VersionedDbGeography : RequiredValueVersionedBase<DbGeography, DbGeographyVersion> {
 		protected override DbGeography DefaultValue {
 			get { return DbGeography.FromText("POINT EMPTY"); }
 		}
 	}
 
 	[ComplexType]
-	public class VersionedDbGeometry : VersionedBase<DbGeometry, DbGeometryVersion> {
-		[Required]
-		public override DbGeometry Value {
-			get { return base.Value; }
-			set { base.Value = value; }
-		}
+	public class VersionedDbGeometry : RequiredValueVersionedBase<DbGeometry, DbGeometryVersion> {
 		protected override DbGeometry DefaultValue {
 			get { return DbGeometry.FromText("POINT EMPTY"); }
 		}
