@@ -107,11 +107,9 @@ namespace EntityFramework.VersionedProperties {
 			versioned.Versions.Clear();
 		}
 
-		private static Int64 what = 0;
 		private static void OnInsertingOrUpdating<TVersionedProperties>(Triggers<TVersionedProperties>.Entry e)
 			where TVersionedProperties : class, IVersionedProperties<TVersionedProperties>, ITriggerable<TVersionedProperties>, new() {
 			foreach (var mapping in GetMappings(e.Entity, e.Context)) {
-				++what;
 				var addAndClearVersionsMethodInfoGeneric = addAndClearVersionsMethodInfo.MakeGenericMethod(mapping.VersionInfo.VersionValueType, mapping.VersionInfo.VersionType);
 				var versionedProperty = mapping.VersionedProperty.GetValue(e.Entity);
 				var dbSet = mapping.VersionInfo.VersionDbSetPropertyInfo.GetValue(e.Context);
