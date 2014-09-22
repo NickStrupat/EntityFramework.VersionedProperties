@@ -9,7 +9,7 @@ Versioned property types are included for most primitive types which are mappabl
 
 Your entity classes which contain any versioned properties must inherit from `IVersionedProperties<T>` and call `this.InitializeVersionedProperties()` before any versioned properties are used (i.e. in the constructor). If your entity class doesn't have a base class or you have control of the inheritance chain, you can inherit from the helper class `VersionedProperties<T>` which handles initialization for you.
 
-Your `DbContext` must inherit from `IDbContextWithVersionedProperties` and all calls to `SaveChanges()` should be replaced by `SaveChangesWithTriggers()`. If you have control of your `DbContext` inheritance chain, the helper class `DbContextWithVersionedProperties` implements the required `DbSet`s for you.
+Your `DbContext` must inherit from `IDbContextWithVersionedProperties` and implement the `DbSet`s and `SaveChanges(Async)` overrides. If you have control of your `DbContext` inheritance chain, the helper class `DbContextWithVersionedProperties` implements the required `DbSet`s and `SaveChanges(Async)` overrides for you.
 
 When accessing your versioned property, the `Value` property represents the current value of your versioned type. Please see the usage example below.
 
@@ -107,12 +107,12 @@ When accessing your versioned property, the `Value` property represents the curr
 												   LastName = { Value = "Smith" }
 											   };
 					context.People.Add(johnSmith);
-					context.SaveChangesWithTriggers();
+					context.SaveChanges();
 					nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
 					nickStrupat.FirstName.Value = "Nicholas";
 					nickStrupat.Location.Value = DbGeography.FromText("POINT(43.7182713 -79.3777061)");
 					context.People.Add(nickStrupat);
-					context.SaveChangesWithTriggers();
+					context.SaveChanges();
 
 				}
 			}

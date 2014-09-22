@@ -65,12 +65,12 @@ namespace Example {
 					                           LastName = { Value = "Smith" }
 				                           };
 				context.People.Add(johnSmith);
-				context.SaveChangesWithTriggers();
+				context.SaveChanges();
 				nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
 				nickStrupat.FirstName.Value = "Nicholas";
 				nickStrupat.Location.Value = DbGeography.FromText("POINT(43.7182713 -79.3777061)");
 				context.People.Add(nickStrupat);
-				context.SaveChangesWithTriggers();
+				context.SaveChanges();
 
 			}
 		}

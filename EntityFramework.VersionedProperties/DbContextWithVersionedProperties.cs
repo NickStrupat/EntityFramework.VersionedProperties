@@ -31,5 +31,12 @@ namespace EntityFramework.VersionedProperties {
 		public DbSet<NullableInt32Version> NullableInt32Versions { get; set; }
 		public DbSet<NullableInt64Version> NullableInt64Versions { get; set; }
 		public DbSet<NullableStringVersion> NullableStringVersions { get; set; }
+
+		public override Int32 SaveChanges() {
+			return this.SaveChangesWithTriggers(base.SaveChanges);
+		}
+		public override Task<Int32> SaveChangesAsync(CancellationToken cancellationToken) {
+			return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken);
+		}
 	}
 }

@@ -18,10 +18,10 @@ namespace EntityFramework.VersionedProperties.Tests {
 				//person.Location = DbGeometry.FromText("POINT(53.095124 -0.864716)");
                 context.People.Add(person);
                 //person.FirstName.Value = String.Empty;
-                context.SaveChangesWithTriggers();
+                context.SaveChanges();
 	            Assert.IsTrue(context.StringVersions.Single().Value == "Nick");
 	            person.LastName.Value = "Sputnik";
-				context.SaveChangesWithTriggers();
+				context.SaveChanges();
 				Assert.IsTrue(context.StringVersions.Count() == 2);
 				Assert.IsTrue(context.StringVersions.Single(x => x.VersionedId == person.LastName.Id).Value == "Strupat");
 
@@ -29,7 +29,7 @@ namespace EntityFramework.VersionedProperties.Tests {
 	            person.Triggers().UpdateFailed += e => updateFailed = true;
 	            try {
 		            person.Inserted = new DateTime();
-		            context.SaveChangesWithTriggers(); // Should throw here about datetime2
+		            context.SaveChanges(); // Should throw here about datetime2
 	            }
 				catch (DbUpdateException ex) {
 		            //ex.Entries.Single().Entity
@@ -42,7 +42,7 @@ namespace EntityFramework.VersionedProperties.Tests {
 	            context.People.Add(another);
 	            person.FirstName.Value = "TEST";
 	            context.People.Remove(person);
-				context.SaveChangesWithTriggers();
+				context.SaveChanges();
 				Assert.IsTrue(!context.StringVersions.Any(x => x.VersionedId == person.FirstName.Id || x.VersionedId == person.LastName.Id));
             }
         }

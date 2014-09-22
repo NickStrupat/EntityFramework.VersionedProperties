@@ -51,7 +51,7 @@
     </Reference>
     <Reference Include="EntityFramework.Triggers, Version=2.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.Triggers.2.0.0.3\lib\net451\EntityFramework.Triggers.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.Triggers.3.0.0.4\lib\net451\EntityFramework.Triggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
