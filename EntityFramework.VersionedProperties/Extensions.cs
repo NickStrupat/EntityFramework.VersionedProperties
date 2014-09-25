@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data.Entity;
 using System.Linq;
 using EntityFramework.Extensions;
@@ -19,53 +19,47 @@ namespace EntityFramework.VersionedProperties {
 			public Type VersionType;
 			public Type VersionValueType;
 		}
-		private static readonly Dictionary<Type, VersionInfo[]> versionDbSetPropertyInfoCache = new Dictionary<Type, VersionInfo[]>();
+		private static readonly ConcurrentDictionary<Type, VersionInfo[]> versionDbSetPropertyInfoCache = new ConcurrentDictionary<Type, VersionInfo[]>();
 		private static VersionInfo[] GetVersionDbSetPropertyInfos(DbContext dbContext) {
 			var dbContextType = dbContext.GetType();
-			VersionInfo[] versionDbSetPropertyInfos;
-			if (!versionDbSetPropertyInfoCache.TryGetValue(dbContextType, out versionDbSetPropertyInfos)) {
-				var versionDbSetPropertyInfoQuery = from propertyInfo in dbContextType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-				                                    where typeof (DbSet<>) == (propertyInfo.PropertyType.IsGenericType ? propertyInfo.PropertyType.GetGenericTypeDefinition() : null)
-				                                    where typeof (IVersion).IsAssignableFrom(propertyInfo.PropertyType.GenericTypeArguments.Single())
-				                                    select new VersionInfo {
-					                                                           VersionDbSetPropertyInfo = propertyInfo,
-					                                                           VersionType = propertyInfo.PropertyType.GenericTypeArguments.Single(),
-					                                                           VersionValueType = propertyInfo.PropertyType.GenericTypeArguments.Single().BaseType.GenericTypeArguments.Single()
-				                                                           };
-				versionDbSetPropertyInfos = versionDbSetPropertyInfoQuery.ToArray();
-				versionDbSetPropertyInfoCache.Add(dbContextType, versionDbSetPropertyInfos);
-			}
-			return versionDbSetPropertyInfos;
+			return versionDbSetPropertyInfoCache.GetOrAdd(dbContextType,
+			                                              t => {
+															  var versionDbSetPropertyInfoQuery = from propertyInfo in dbContextType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+																								  where typeof(DbSet<>) == (propertyInfo.PropertyType.IsGenericType ? propertyInfo.PropertyType.GetGenericTypeDefinition() : null)
+																								  where typeof(IVersion).IsAssignableFrom(propertyInfo.PropertyType.GenericTypeArguments.Single())
+																								  select new VersionInfo {
+																									  VersionDbSetPropertyInfo = propertyInfo,
+																									  VersionType = propertyInfo.PropertyType.GenericTypeArguments.Single(),
+																									  VersionValueType = propertyInfo.PropertyType.GenericTypeArguments.Single().BaseType.GenericTypeArguments.Single()
+																								  };
+															  return versionDbSetPropertyInfoQuery.ToArray();
+			                                              });
 		}
-		private static readonly Dictionary<IVersionedProperties, PropertyInfo[]> versionedPropertiesPropertyInfoCache = new Dictionary<IVersionedProperties, PropertyInfo[]>();
+		private static readonly ConcurrentDictionary<IVersionedProperties, PropertyInfo[]> versionedPropertiesPropertyInfoCache = new ConcurrentDictionary<IVersionedProperties, PropertyInfo[]>();
 		private static PropertyInfo[] GetVersionedPropertiesPropertyInfos(IVersionedProperties versionedProperties) {
-			PropertyInfo[] versionPropertyInfos;
-			if (!versionedPropertiesPropertyInfoCache.TryGetValue(versionedProperties, out versionPropertyInfos)) {
-				versionPropertyInfos = versionedProperties.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType)).ToArray();
-				versionedPropertiesPropertyInfoCache.Add(versionedProperties, versionPropertyInfos);
-			}
-			return versionPropertyInfos;
+			return versionedPropertiesPropertyInfoCache.GetOrAdd(
+				versionedProperties,
+				v => v.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType)).ToArray()
+			);
 		}
 		internal struct Mapping {
 			public PropertyInfo VersionedProperty { get; set; }
 			public VersionInfo VersionInfo { get; set; }
 		}
-		private static readonly Dictionary<Tuple<IVersionedProperties, DbContext>, Mapping[]> mappingsCache = new Dictionary<Tuple<IVersionedProperties, DbContext>, Mapping[]>();
+		private static readonly ConcurrentDictionary<Tuple<IVersionedProperties, DbContext>, Mapping[]> mappingsCache = new ConcurrentDictionary<Tuple<IVersionedProperties, DbContext>, Mapping[]>();
 		private static Mapping[] GetMappings(IVersionedProperties versionedProperties, DbContext dbContext) {
 			var pair = new Tuple<IVersionedProperties, DbContext>(versionedProperties, dbContext);
-			Mapping[] mappings;
-			if (!mappingsCache.TryGetValue(pair, out mappings)) {
-				var mappingsQuery = from versionedPropertyPropertyInfo in GetVersionedPropertiesPropertyInfos(versionedProperties)
-									from versionDbSetPropertyInfo in GetVersionDbSetPropertyInfos(dbContext)
-									where versionDbSetPropertyInfo.VersionType == versionedPropertyPropertyInfo.PropertyType.BaseType.GenericTypeArguments[1]
-									select new Mapping {
-										VersionedProperty = versionedPropertyPropertyInfo,
-										VersionInfo = versionDbSetPropertyInfo
-									};
-				mappings = mappingsQuery.ToArray();
-				mappingsCache.Add(pair, mappings.ToArray());
-			}
-			return mappings;
+			return mappingsCache.GetOrAdd(pair,
+			                              p => {
+											  var mappingsQuery = from versionedPropertyPropertyInfo in GetVersionedPropertiesPropertyInfos(versionedProperties)
+																  from versionDbSetPropertyInfo in GetVersionDbSetPropertyInfos(dbContext)
+																  where versionDbSetPropertyInfo.VersionType == versionedPropertyPropertyInfo.PropertyType.BaseType.GenericTypeArguments[1]
+																  select new Mapping {
+																	  VersionedProperty = versionedPropertyPropertyInfo,
+																	  VersionInfo = versionDbSetPropertyInfo
+																  };
+				                              return mappingsQuery.ToArray();
+			                              });
 		}
 
 		/// <summary>
