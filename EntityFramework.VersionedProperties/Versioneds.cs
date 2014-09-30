@@ -28,6 +28,9 @@ namespace EntityFramework.VersionedProperties {
 				this.value = value;
 			}
 		}
+		public sealed override String ToString() {
+			return Value.ToString();
+		}
 		protected virtual TValue DefaultValue {
 			get { return default(TValue); }
 		}
