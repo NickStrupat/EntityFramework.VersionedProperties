@@ -52,7 +52,11 @@ When accessing your versioned property, the `Value` property represents the curr
 			public enum Standing { Good, Fair, Poor }
 			public class StandingVersion : VersionBase<Standing> { }
 			[ComplexType]
-			public class VersionedStanding : VersionedBase<Standing, StandingVersion> { }
+			public class VersionedStanding : VersionedBase<Standing, StandingVersion> {
+				protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionsDbSet {
+					get { return x => ((Context) x).StandingVersions; }
+				}
+			}
 
 			[ComplexType]
 			public class Friendship {
@@ -68,9 +72,14 @@ When accessing your versioned property, the `Value` property represents the curr
 			[ComplexType]
 			public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion> {
 				protected override Friendship DefaultValue { get { return new Friendship(); } }
+				protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionsDbSet {
+					get { return x => ((Context)x).FriendshipVersions; }
+				}
 			}
 
-			public class Person : VersionedProperties<Person> {
+			public class Person : IVersionedProperties {
+				public Triggers<Person, Context> Triggers { get { return this.Triggers<Person, Context>(); } }
+
 				public Int64 Id { get; protected set; }
 				public DateTime Inserted { get; protected set; }
 				public DateTime Updated { get; protected set; }
@@ -81,12 +90,13 @@ When accessing your versioned property, the `Value` property represents the curr
 				public VersionedFriendship Friendship { get; protected set; }
 
 				public Person() {
-					this.Triggers().Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
-					this.Triggers().Updating += e => e.Entity.Updated = DateTime.Now;
+					this.InitializeVersionedProperties<Person, Context>();
+					this.Triggers.Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
+					this.Triggers.Updating += e => e.Entity.Updated = DateTime.Now;
 				}
 			}
 
-			public class Context : DbContextWithVersionedProperties {
+			public class Context : DbContextWithVersionedProperties<Context> {
 				public DbSet<Person> People { get; set; }
 				public DbSet<StandingVersion> StandingVersions { get; set; }
 				public DbSet<FriendshipVersion> FriendshipVersions { get; set; }
@@ -96,7 +106,7 @@ When accessing your versioned property, the `Value` property represents the curr
 				using (var context = new Context()) {
 					context.Database.Delete();
 					context.Database.Create();
-				
+					
 					var nickStrupat = new Person {
 													 FirstName = { Value = "Nick" },
 													 LastName = { Value = "Strupat" },

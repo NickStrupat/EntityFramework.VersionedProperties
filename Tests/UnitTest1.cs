@@ -26,7 +26,7 @@ namespace EntityFramework.VersionedProperties.Tests {
 				Assert.IsTrue(context.StringVersions.Single(x => x.VersionedId == person.LastName.Id).Value == "Strupat");
 
 	            Boolean updateFailed = false;
-	            person.Triggers().UpdateFailed += e => updateFailed = true;
+	            person.Triggers.UpdateFailed += e => updateFailed = true;
 	            try {
 		            person.Inserted = new DateTime();
 		            context.SaveChanges(); // Should throw here about datetime2
