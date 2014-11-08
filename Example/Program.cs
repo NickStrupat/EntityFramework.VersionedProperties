@@ -36,8 +36,6 @@ namespace Example {
 		}
 
 		public class Person : IVersionedProperties {
-			public Triggers<Person, Context> Triggers { get { return this.Triggers<Person, Context>(); } }
-
 			public Int64 Id { get; protected set; }
 			public DateTime Inserted { get; protected set; }
 			public DateTime Updated { get; protected set; }
@@ -48,13 +46,13 @@ namespace Example {
 			public VersionedFriendship Friendship { get; protected set; }
 
 			public Person() {
-				this.InitializeVersionedProperties<Person, Context>();
-				this.Triggers.Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
-				this.Triggers.Updating += e => e.Entity.Updated = DateTime.Now;
+				this.InitializeVersionedProperties();
+				this.Triggers().Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
+				this.Triggers().Updating += e => e.Entity.Updated = DateTime.Now;
 			}
 		}
 
-		public class Context : DbContextWithVersionedProperties<Context> {
+		public class Context : DbContextWithVersionedProperties {
 			public DbSet<Person> People { get; set; }
 			public DbSet<StandingVersion> StandingVersions { get; set; }
 			public DbSet<FriendshipVersion> FriendshipVersions { get; set; }

@@ -29,7 +29,7 @@ namespace EntityFramework.VersionedProperties {
 				if (Id == Guid.Empty)
 					Id = Guid.NewGuid();
 				else
-					Versions.Add(new TVersion { VersionedId = Id, Added = Modified, Value = Value });
+					InternalLocalVersions.Add(new TVersion { VersionedId = Id, Added = Modified, Value = Value });
 				this.value = value;
 			}
 		}
@@ -44,15 +44,21 @@ namespace EntityFramework.VersionedProperties {
 			Modified = DateTime.Now;
 			value = DefaultValue;
 			AddVersionsToDbContextWithVersionedProperties = dbContext => {
-																VersionsDbSet(dbContext).AddRange(Versions);
-																Versions.Clear();
+																VersionsDbSet(dbContext).AddRange(InternalLocalVersions);
+																InternalLocalVersions.Clear();
 			                                                };
 			DeleteVersionsFromDbContextWithVersionedProperties = dbContext => {
 				                                                     VersionsDbSet(dbContext).Where(x => x.VersionedId == Id).Delete();
-																	 Versions.Clear();
+																	 InternalLocalVersions.Clear();
 			                                                     };
 		}
-		internal readonly List<TVersion> Versions = new List<TVersion>();
+		internal readonly List<TVersion> InternalLocalVersions = new List<TVersion>();
+		public IEnumerable<TVersion> LocalVersions {
+			get { return InternalLocalVersions; }
+		}
+		public IQueryable<TVersion> Versions(IDbContextWithVersionedProperties dbContext) {
+			return VersionsDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
+		}
 	}
 
 	public abstract class NullableVersionedBase<T, TVersion> : VersionedBase<T, TVersion> where TVersion : VersionBase<T>, new() {}

@@ -1,13 +1,14 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Threading;
+using System.Threading.Tasks;
 using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties {
 	/// <summary>
 	/// Inherit from this class to enable versioned properties in your DbContext. Call SaveChanges and SaveChangesAsync as you normally would. They are overridden to handle the versioned properties behaviour.
 	/// </summary>
-	public abstract class DbContextWithVersionedProperties<TDbContext> : DbContextWithTriggers<TDbContext>, IDbContextWithVersionedProperties
-		where TDbContext : DbContextWithVersionedProperties<TDbContext>
-	{
+	public abstract class DbContextWithVersionedProperties : DbContext, IDbContextWithVersionedProperties {
 		public DbSet<BooleanVersion> BooleanVersions { get; set; }
 		public DbSet<DateTimeVersion> DateTimeVersions { get; set; }
 		public DbSet<DateTimeOffsetVersion> DateTimeOffsetVersions { get; set; }
@@ -30,5 +31,12 @@ namespace EntityFramework.VersionedProperties {
 		public DbSet<NullableInt32Version> NullableInt32Versions { get; set; }
 		public DbSet<NullableInt64Version> NullableInt64Versions { get; set; }
 		public DbSet<NullableStringVersion> NullableStringVersions { get; set; }
+
+		public override Int32 SaveChanges() {
+			return this.SaveChangesWithTriggers(base.SaveChanges);
+		}
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken) {
+			return this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken);
+		}
 	}
 }

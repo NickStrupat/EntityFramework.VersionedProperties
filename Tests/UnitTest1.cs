@@ -23,16 +23,15 @@ namespace EntityFramework.VersionedProperties.Tests {
 	            person.LastName.Value = "Sputnik";
 				context.SaveChanges();
 				Assert.IsTrue(context.StringVersions.Count() == 2);
-				Assert.IsTrue(context.StringVersions.Single(x => x.VersionedId == person.LastName.Id).Value == "Strupat");
+				Assert.IsTrue(person.LastName.Versions(context).Single().Value == "Strupat");
 
 	            Boolean updateFailed = false;
-	            person.Triggers.UpdateFailed += e => updateFailed = true;
+	            person.Triggers().UpdateFailed += e => updateFailed = true;
 	            try {
 		            person.Inserted = new DateTime();
 		            context.SaveChanges(); // Should throw here about datetime2
 	            }
 				catch (DbUpdateException ex) {
-		            //ex.Entries.Single().Entity
 	            }
 				Assert.IsTrue(updateFailed);
 
@@ -43,8 +42,19 @@ namespace EntityFramework.VersionedProperties.Tests {
 	            person.FirstName.Value = "TEST";
 	            context.People.Remove(person);
 				context.SaveChanges();
-				Assert.IsTrue(!context.StringVersions.Any(x => x.VersionedId == person.FirstName.Id || x.VersionedId == person.LastName.Id));
+				Assert.IsFalse(person.FirstName.Versions(context).Any());
+				Assert.IsFalse(person.LastName.Versions(context).Any());
             }
         }
+		//[TestMethod]
+		//public void TestVersionsRecall() {
+		//	using (var context = new Context()) {
+		//		context.Database.Delete();
+		//		context.Database.Create();
+
+		//		var person = new Person { FirstName = { Value = "Nick" }, LastName = { Value = "Strupat" } };
+		//		//person.FirstName.Value = 
+		//	}
+		//}
     }
 }
