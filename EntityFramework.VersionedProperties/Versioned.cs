@@ -39,16 +39,16 @@ namespace EntityFramework.VersionedProperties {
 		protected virtual TValue DefaultValue {
 			get { return default(TValue); }
 		}
-		protected abstract Func<IDbContextWithVersionedProperties, DbSet<TVersion>> VersionsDbSet { get; }
+		protected abstract Func<IDbContextWithVersionedProperties, DbSet<TVersion>> VersionDbSet { get; }
 		protected VersionedBase() {
 			Modified = DateTime.Now;
 			value = DefaultValue;
 			AddVersionsToDbContextWithVersionedProperties = dbContext => {
-																VersionsDbSet(dbContext).AddRange(InternalLocalVersions);
+																VersionDbSet(dbContext).AddRange(InternalLocalVersions);
 																InternalLocalVersions.Clear();
 			                                                };
 			DeleteVersionsFromDbContextWithVersionedProperties = dbContext => {
-				                                                     VersionsDbSet(dbContext).Where(x => x.VersionedId == Id).Delete();
+				                                                     VersionDbSet(dbContext).Where(x => x.VersionedId == Id).Delete();
 																	 InternalLocalVersions.Clear();
 			                                                     };
 		}
@@ -56,8 +56,8 @@ namespace EntityFramework.VersionedProperties {
 		public IEnumerable<TVersion> LocalVersions {
 			get { return InternalLocalVersions; }
 		}
-		public IQueryable<TVersion> Versions(IDbContextWithVersionedProperties dbContext) {
-			return VersionsDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
+		public IOrderedQueryable<TVersion> Versions(IDbContextWithVersionedProperties dbContext) {
+			return VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 		}
 	}
 
@@ -76,7 +76,7 @@ namespace EntityFramework.VersionedProperties {
 		protected override String DefaultValue {
 			get { return String.Empty; }
 		}
-		protected override Func<IDbContextWithVersionedProperties, DbSet<StringVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<StringVersion>> VersionDbSet {
 			get { return x => x.StringVersions; }
 		}
 	}
@@ -86,7 +86,7 @@ namespace EntityFramework.VersionedProperties {
 		protected override DbGeography DefaultValue {
 			get { return DbGeography.FromText("POINT EMPTY"); }
 		}
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DbGeographyVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DbGeographyVersion>> VersionDbSet {
 			get { return x => x.DbGeographyVersions; }
 		}
 	}
@@ -96,123 +96,123 @@ namespace EntityFramework.VersionedProperties {
 		protected override DbGeometry DefaultValue {
 			get { return DbGeometry.FromText("POINT EMPTY"); }
 		}
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DbGeometryVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DbGeometryVersion>> VersionDbSet {
 			get { return x => x.DbGeometryVersions; }
 		}
 	}
 
 	[ComplexType]
 	public class VersionedBoolean : VersionedBase<Boolean, BooleanVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<BooleanVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<BooleanVersion>> VersionDbSet {
 			get { return x => x.BooleanVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedDateTime : VersionedBase<DateTime, DateTimeVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DateTimeVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DateTimeVersion>> VersionDbSet {
 			get { return x => x.DateTimeVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedDateTimeOffset : VersionedBase<DateTimeOffset, DateTimeOffsetVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DateTimeOffsetVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DateTimeOffsetVersion>> VersionDbSet {
 			get { return x => x.DateTimeOffsetVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedDecimal : VersionedBase<Decimal, DecimalVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DecimalVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DecimalVersion>> VersionDbSet {
 			get { return x => x.DecimalVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedDouble : VersionedBase<Double, DoubleVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<DoubleVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<DoubleVersion>> VersionDbSet {
 			get { return x => x.DoubleVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedGuid : VersionedBase<Guid, GuidVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<GuidVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<GuidVersion>> VersionDbSet {
 			get { return x => x.GuidVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedInt32 : VersionedBase<Int32, Int32Version> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<Int32Version>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<Int32Version>> VersionDbSet {
 			get { return x => x.Int32Versions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedInt64 : VersionedBase<Int64, Int64Version> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<Int64Version>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<Int64Version>> VersionDbSet {
 			get { return x => x.Int64Versions; }
 		}
 	}
 
 	[ComplexType]
 	public class VersionedNullableBoolean : NullableVersionedBase<Boolean?, NullableBooleanVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableBooleanVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableBooleanVersion>> VersionDbSet {
 			get { return x => x.NullableBooleanVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDateTime : NullableVersionedBase<DateTime?, NullableDateTimeVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDateTimeVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDateTimeVersion>> VersionDbSet {
 			get { return x => x.NullableDateTimeVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDateTimeOffset : NullableVersionedBase<DateTimeOffset?, NullableDateTimeOffsetVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDateTimeOffsetVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDateTimeOffsetVersion>> VersionDbSet {
 			get { return x => x.NullableDateTimeOffsetVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDbGeography : NullableVersionedBase<DbGeography, NullableDbGeographyVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDbGeographyVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDbGeographyVersion>> VersionDbSet {
 			get { return x => x.NullableDbGeographyVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDbGeometry : NullableVersionedBase<DbGeometry, NullableDbGeometryVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDbGeometryVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDbGeometryVersion>> VersionDbSet {
 			get { return x => x.NullableDbGeometryVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDecimal : NullableVersionedBase<Decimal?, NullableDecimalVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDecimalVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDecimalVersion>> VersionDbSet {
 			get { return x => x.NullableDecimalVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableDouble : NullableVersionedBase<Double?, NullableDoubleVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDoubleVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableDoubleVersion>> VersionDbSet {
 			get { return x => x.NullableDoubleVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableGuid : NullableVersionedBase<Guid?, NullableGuidVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableGuidVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableGuidVersion>> VersionDbSet {
 			get { return x => x.NullableGuidVersions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableInt32 : NullableVersionedBase<Int32?, NullableInt32Version> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableInt32Version>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableInt32Version>> VersionDbSet {
 			get { return x => x.NullableInt32Versions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableInt64 : NullableVersionedBase<Int64?, NullableInt64Version> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableInt64Version>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableInt64Version>> VersionDbSet {
 			get { return x => x.NullableInt64Versions; }
 		}
 	}
 	[ComplexType]
 	public class VersionedNullableString : NullableVersionedBase<String, NullableStringVersion> {
-		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableStringVersion>> VersionsDbSet {
+		protected override Func<IDbContextWithVersionedProperties, DbSet<NullableStringVersion>> VersionDbSet {
 			get { return x => x.NullableStringVersions; }
 		}
 	}

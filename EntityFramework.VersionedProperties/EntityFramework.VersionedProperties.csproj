@@ -47,9 +47,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.Triggers, Version=5.0.0.205, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework.Triggers, Version=5.0.1.214, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.Triggers.5.0.0\lib\net451\EntityFramework.Triggers.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.Triggers.5.0.1\lib\net451\EntityFramework.Triggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -61,10 +61,11 @@
     <Compile Include="IDbContextWithVersionedProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbContextWithVersionedProperties.cs" />
-    <Compile Include="Versioneds.cs" />
-    <Compile Include="Versions.cs">
+    <Compile Include="Versioned.cs" />
+    <Compile Include="Version.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="VersionedPropertyMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

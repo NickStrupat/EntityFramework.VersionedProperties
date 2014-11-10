@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Spatial;
+using System.Linq;
 using EntityFramework.Triggers;
 using EntityFramework.VersionedProperties;
 
@@ -11,7 +12,7 @@ namespace Example {
 		public class StandingVersion : VersionBase<Standing> { }
 		[ComplexType]
 		public class VersionedStanding : VersionedBase<Standing, StandingVersion> {
-			protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionsDbSet {
+			protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionDbSet {
 				get { return x => ((Context) x).StandingVersions; }
 			}
 		}
@@ -30,7 +31,7 @@ namespace Example {
 		[ComplexType]
 		public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion> {
 			protected override Friendship DefaultValue { get { return new Friendship(); } }
-			protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionsDbSet {
+			protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionDbSet {
 				get { return x => ((Context)x).FriendshipVersions; }
 			}
 		}
@@ -60,26 +61,34 @@ namespace Example {
 
 		static void Main(String[] args) {
 			using (var context = new Context()) {
-				context.Database.Delete();
-				context.Database.Create();
-				
+				//context.Database.Delete();
+				//context.Database.Create();
 				var nickStrupat = new Person {
 					                             FirstName = { Value = "Nick" },
 												 LastName = { Value = "Strupat" },
-												 Location = { Value = DbGeography.FromText("POINT(42.948881 -81.24862)") },
+												 Location = { Value = DbGeography.FromText("POINT(-81.24862 42.948881)") },
+												 Friendship = { Value = new Friendship(42, false) },
 				                             };
 				var johnSmith = new Person {
 					                           FirstName = { Value = "John" },
 					                           LastName = { Value = "Smith" }
 				                           };
 				context.People.Add(johnSmith);
-				context.SaveChanges();
-				nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
-				nickStrupat.FirstName.Value = "Nicholas";
-				nickStrupat.Location.Value = DbGeography.FromText("POINT(43.7182713 -79.3777061)");
 				context.People.Add(nickStrupat);
 				context.SaveChanges();
-
+				nickStrupat = context.People.Single(x => x.Id == nickStrupat.Id);
+				nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
+				nickStrupat.FirstName.Value = "Nicholas";
+				nickStrupat.Location.Value = DbGeography.FromText("POINT(-79.3777061 43.7182713)");
+				//context.People.Add(nickStrupat);
+				context.SaveChanges();
+				//var dbGeographyVersions = context.DbGeographyVersions.ToArray();
+				//var locations = new [] {nickStrupat.Location.Value}.Concat(nickStrupat.Location.Versions(context).Select(x => x.Value)).ToArray();
+				//var distanceTravelled = locations.Skip(1).Select((x, i) => x.Distance(locations[i])).ToArray();
+				//var distance = locations[0].Distance(locations[1]).GetValueOrDefault();
+				//var distanc2 = locations[1].Distance(locations[0]).GetValueOrDefault();
+				var what = DbGeography.FromText("POINT(-81.24863 42.948881)", 4326).Distance(DbGeography.FromText("POINT(-79.3777065 43.7182713)", 4326));
+				var how = DbGeography.FromText("POINT(-81.24864 42.948881)", 4326).Distance(DbGeography.FromText("POINT(-79.3777064 43.7182713)", 4326));
 			}
 		}
 	}

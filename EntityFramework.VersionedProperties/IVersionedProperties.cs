@@ -1,9 +1,8 @@
-﻿using System;
-using EntityFramework.Triggers;
+﻿using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties {
 	/// <summary>
-	/// Inherit from this interface to support versioned properties and triggers in your derived class. You must call <c>this.InitializeVersionedProperties();</c> before accessing the versioned properties. Alternatively, inherit from <c>VersionedProperties&lt;T&gt;</c> which handles initialization automatically.
+	/// Implement this interface to support versioned properties and triggers in your entity class. You must call <see cref="Extensions.InitializeVersionedProperties{TVersionedProperties}"/> before accessing the versioned properties. Alternatively, inherit from <c>VersionedProperties&lt;T&gt;</c> which handles initialization automatically.
 	/// </summary>
 	public interface IVersionedProperties : ITriggerable {}
 }

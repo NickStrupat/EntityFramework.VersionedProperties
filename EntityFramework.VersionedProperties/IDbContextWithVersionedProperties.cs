@@ -2,7 +2,9 @@
 
 namespace EntityFramework.VersionedProperties {
 	/// <summary>
-	/// Inherit from this interface to add the standard versioned properties in your DbContext. You must call <c>dbContext.SaveChangesWithTriggers()</c> or <c>await dbContext.SaveChangesWithTriggersAsync()</c> to use versioned properties.
+	/// Implement this interface in your <see cref="DbContext"/> to add the standard versioned properties. You must inherit from <see cref="EntityFramework.Triggers.DbContextWithTriggers"/>
+	/// or override <see cref="DbContext.SaveChanges"/> and <see cref="DbContext.SaveChangesAsync(System.Threading.CancellationToken)"/> by calling
+	/// <see cref="Triggers.Extensions.SaveChangesWithTriggers"/> and <see cref="Triggers.Extensions.SaveChangesWithTriggersAsync"/> respectively to use versioned properties.
 	/// </summary>
 	public interface IDbContextWithVersionedProperties {
 		DbSet<BooleanVersion> BooleanVersions { get; set; }
