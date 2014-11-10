@@ -61,8 +61,8 @@ namespace Example {
 
 		static void Main(String[] args) {
 			using (var context = new Context()) {
-				//context.Database.Delete();
-				//context.Database.Create();
+				context.Database.Delete();
+				context.Database.Create();
 				var nickStrupat = new Person {
 					                             FirstName = { Value = "Nick" },
 												 LastName = { Value = "Strupat" },
@@ -82,13 +82,8 @@ namespace Example {
 				nickStrupat.Location.Value = DbGeography.FromText("POINT(-79.3777061 43.7182713)");
 				//context.People.Add(nickStrupat);
 				context.SaveChanges();
-				//var dbGeographyVersions = context.DbGeographyVersions.ToArray();
-				//var locations = new [] {nickStrupat.Location.Value}.Concat(nickStrupat.Location.Versions(context).Select(x => x.Value)).ToArray();
-				//var distanceTravelled = locations.Skip(1).Select((x, i) => x.Distance(locations[i])).ToArray();
-				//var distance = locations[0].Distance(locations[1]).GetValueOrDefault();
-				//var distanc2 = locations[1].Distance(locations[0]).GetValueOrDefault();
-				var what = DbGeography.FromText("POINT(-81.24863 42.948881)", 4326).Distance(DbGeography.FromText("POINT(-79.3777065 43.7182713)", 4326));
-				var how = DbGeography.FromText("POINT(-81.24864 42.948881)", 4326).Distance(DbGeography.FromText("POINT(-79.3777064 43.7182713)", 4326));
+				var locations = new[] { nickStrupat.Location.Value }.Concat(nickStrupat.Location.Versions(context).Select(x => x.Value)).ToArray();
+				var distanceTravelledAsTheCrowFlies = locations.Skip(1).Select((x, i) => x.Distance(locations[i])).Sum();
 			}
 		}
 	}
