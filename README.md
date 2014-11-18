@@ -7,7 +7,7 @@ Versioned property types are included for most primitive types which are mappabl
 
 ## Basic requirements
 
-Your entity classes which contain any versioned properties must inherit from `IVersionedProperties<T>` and call `this.InitializeVersionedProperties()` before any versioned properties are used (i.e. in the constructor). If your entity class doesn't have a base class or you have control of the inheritance chain, you can inherit from the helper class `VersionedProperties<T>` which handles initialization for you.
+Your entity classes which contain any versioned properties must inherit from `IVersionedProperties` and call `this.InitializeVersionedProperties()` before any versioned properties are used (i.e. in the constructor).
 
 Your `DbContext` must inherit from `IDbContextWithVersionedProperties` and implement the `DbSet`s and `SaveChanges(Async)` overrides. If you have control of your `DbContext` inheritance chain, the helper class `DbContextWithVersionedProperties` implements the required `DbSet`s and `SaveChanges(Async)` overrides for you.
 
@@ -44,6 +44,7 @@ When accessing your versioned property, the `Value` property represents the curr
 	using System.ComponentModel.DataAnnotations.Schema;
 	using System.Data.Entity;
 	using System.Data.Entity.Spatial;
+	using System.Linq;
 	using EntityFramework.Triggers;
 	using EntityFramework.VersionedProperties;
 
@@ -53,7 +54,7 @@ When accessing your versioned property, the `Value` property represents the curr
 			public class StandingVersion : VersionBase<Standing> { }
 			[ComplexType]
 			public class VersionedStanding : VersionedBase<Standing, StandingVersion> {
-				protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionsDbSet {
+				protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionDbSet {
 					get { return x => ((Context) x).StandingVersions; }
 				}
 			}
@@ -72,14 +73,12 @@ When accessing your versioned property, the `Value` property represents the curr
 			[ComplexType]
 			public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion> {
 				protected override Friendship DefaultValue { get { return new Friendship(); } }
-				protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionsDbSet {
+				protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionDbSet {
 					get { return x => ((Context)x).FriendshipVersions; }
 				}
 			}
 
 			public class Person : IVersionedProperties {
-				public Triggers<Person, Context> Triggers { get { return this.Triggers<Person, Context>(); } }
-
 				public Int64 Id { get; protected set; }
 				public DateTime Inserted { get; protected set; }
 				public DateTime Updated { get; protected set; }
@@ -90,13 +89,13 @@ When accessing your versioned property, the `Value` property represents the curr
 				public VersionedFriendship Friendship { get; protected set; }
 
 				public Person() {
-					this.InitializeVersionedProperties<Person, Context>();
-					this.Triggers.Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
-					this.Triggers.Updating += e => e.Entity.Updated = DateTime.Now;
+					this.InitializeVersionedProperties();
+					this.Triggers().Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
+					this.Triggers().Updating += e => e.Entity.Updated = DateTime.Now;
 				}
 			}
 
-			public class Context : DbContextWithVersionedProperties<Context> {
+			public class Context : DbContextWithVersionedProperties {
 				public DbSet<Person> People { get; set; }
 				public DbSet<StandingVersion> StandingVersions { get; set; }
 				public DbSet<FriendshipVersion> FriendshipVersions { get; set; }
@@ -106,24 +105,27 @@ When accessing your versioned property, the `Value` property represents the curr
 				using (var context = new Context()) {
 					context.Database.Delete();
 					context.Database.Create();
-					
 					var nickStrupat = new Person {
 													 FirstName = { Value = "Nick" },
 													 LastName = { Value = "Strupat" },
-													 Location = { Value = DbGeography.FromText("POINT(42.948881 -81.24862)") },
+													 Location = { Value = DbGeography.FromText("POINT(-81.24862 42.948881)") },
+													 Friendship = { Value = new Friendship(42, false) },
 												 };
 					var johnSmith = new Person {
 												   FirstName = { Value = "John" },
 												   LastName = { Value = "Smith" }
 											   };
 					context.People.Add(johnSmith);
-					context.SaveChanges();
-					nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
-					nickStrupat.FirstName.Value = "Nicholas";
-					nickStrupat.Location.Value = DbGeography.FromText("POINT(43.7182713 -79.3777061)");
 					context.People.Add(nickStrupat);
 					context.SaveChanges();
-
+					nickStrupat = context.People.Single(x => x.Id == nickStrupat.Id);
+					nickStrupat.Friendship.Value = new Friendship(johnSmith.Id, true);
+					nickStrupat.FirstName.Value = "Nicholas";
+					nickStrupat.Location.Value = DbGeography.FromText("POINT(-79.3777061 43.7182713)");
+					//context.People.Add(nickStrupat);
+					context.SaveChanges();
+					var locations = new[] { nickStrupat.Location.Value }.Concat(nickStrupat.Location.Versions(context).Select(x => x.Value)).ToArray();
+					var distanceTravelledAsTheCrowFlies = locations.Skip(1).Select((x, i) => x.Distance(locations[i])).Sum();
 				}
 			}
 		}
