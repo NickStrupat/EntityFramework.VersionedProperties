@@ -26,7 +26,7 @@ namespace EntityFramework.VersionedProperties {
 			var argument = Expression.Parameter(typeof(Versioned));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
-				propertyInfo.SetMethod,
+				propertyInfo.GetSetMethod(true),
 				Expression.Convert(argument, propertyInfo.PropertyType)
 				);
 			return Expression.Lambda<Action<IVersionedProperties, Versioned>>(setterCall, instance, argument).Compile();
@@ -35,7 +35,7 @@ namespace EntityFramework.VersionedProperties {
 			var instance = Expression.Parameter(typeof(IVersionedProperties));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
-				propertyInfo.GetMethod
+				propertyInfo.GetGetMethod()
 				);
 			return Expression.Lambda<Func<IVersionedProperties, Versioned>>(setterCall, instance).Compile();
 		}

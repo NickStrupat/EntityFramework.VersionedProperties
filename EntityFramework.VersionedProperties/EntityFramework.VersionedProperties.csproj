@@ -49,7 +49,7 @@
     </Reference>
     <Reference Include="EntityFramework.Triggers, Version=5.0.1.214, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.Triggers.5.0.1\lib\net451\EntityFramework.Triggers.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.Triggers.5.0.2\lib\net451\EntityFramework.Triggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
