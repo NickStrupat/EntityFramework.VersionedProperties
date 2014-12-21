@@ -46,6 +46,8 @@ When accessing your versioned property, the `Value` property represents the curr
 		public Int64 Id { get; set; }
 		public String Name { get; set; }
 		public VersionedDateTime CheckIn { get; set; }
+		
+		public Person() { this.InitializeVersionedProperties(); }
 	}
 	
 	public class Context : DbContextWithVersionedProperties {
