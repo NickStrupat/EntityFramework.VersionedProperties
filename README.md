@@ -55,7 +55,8 @@ When accessing your versioned property, the `Value` property represents the curr
 	var nick = new Person { Name = "Nick", CheckIn = { Value = DateTime.Now } };
 	context.People.Add(nick);
 	context.SaveChanges();
-	Task.Delay(1337).Wait;
+	
+	// Then at some point later...
 	nick.CheckIn.Value = DateTime.Now;
 	context.SaveChanges();
 	
