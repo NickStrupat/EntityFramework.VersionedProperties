@@ -40,6 +40,29 @@ When accessing your versioned property, the `Value` property represents the curr
 
 ## Usage
 
+#### Basic
+
+	public class Person : IVersionedProperties {
+		public Int64 Id { get; set; }
+		public String Name { get; set; }
+		public VersionedDateTime CheckIn { get; set; }
+	}
+	
+	public class Context : DbContextWithVersionedProperties {
+		public DbSet<Person> People { get; set; }
+	}
+	
+	var nick = new Person { Name = "Nick", CheckIn = { Value = DateTime.Now } };
+	context.People.Add(nick);
+	context.SaveChanges();
+	Task.Delay(1337).Wait;
+	nick.CheckIn.Value = DateTime.Now;
+	context.SaveChanges();
+	
+	// At this point, `People` contains one row with the most recent check-in value, and `VersionedStrings` contains one row with the previous check-in time.
+
+#### Extended
+	
 	using System;
 	using System.ComponentModel.DataAnnotations.Schema;
 	using System.Data.Entity;
