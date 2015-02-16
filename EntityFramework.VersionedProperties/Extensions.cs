@@ -8,13 +8,10 @@ using System.Reflection;
 namespace EntityFramework.VersionedProperties {
 	public static class Extensions {
 		private static readonly ConcurrentDictionary<Type, VersionedPropertyMapping[]> versionedPropertyMappingsCache = new ConcurrentDictionary<Type, VersionedPropertyMapping[]>();
-		private static IEnumerable<VersionedPropertyMapping> GetVersionedPropertyMappings(Type versionedPropertiesType) {
-#if DEBUG
-			if (!typeof(IVersionedProperties).IsAssignableFrom(versionedPropertiesType))
-				throw new ArgumentException("Argument must be a Type which implements IVersionedProperties", "versionedPropertiesType");
-#endif
+
+		private static IEnumerable<VersionedPropertyMapping> GetVersionedPropertyMappings<TVersionedProperties>() where TVersionedProperties : IVersionedProperties {
 			return versionedPropertyMappingsCache.GetOrAdd(
-				versionedPropertiesType,
+				typeof(TVersionedProperties),
 				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(Versioned).IsAssignableFrom(x.PropertyType)).Select(x => new VersionedPropertyMapping(x)).ToArray()
 			);
 		}
@@ -41,7 +38,7 @@ namespace EntityFramework.VersionedProperties {
 			where TVersionedProperties : class, IVersionedProperties, ITriggerable, new()
 		{
 			var triggers = versionedProperties.Triggers();
-			var versionedPropertyMappings = GetVersionedPropertyMappings(typeof(TVersionedProperties));
+			var versionedPropertyMappings = GetVersionedPropertyMappings<TVersionedProperties>();
 			foreach (var versionedPropertyMapping in versionedPropertyMappings) {
 				var versioned = versionedPropertyMapping.GetInstantiatedVersioned(versionedProperties);
 				triggers.Inserting += entry => versioned.AddVersionsToDbContextWithVersionedProperties((IDbContextWithVersionedProperties) entry.Context);
