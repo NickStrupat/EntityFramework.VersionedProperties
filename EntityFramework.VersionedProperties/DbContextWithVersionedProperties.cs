@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties {

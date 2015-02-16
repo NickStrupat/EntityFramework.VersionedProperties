@@ -3,9 +3,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EntityFramework.VersionedProperties {
-	internal struct VersionedPropertyMapping {
+	internal class VersionedPropertyMapping {
 		public Func<IVersionedProperties, Versioned> GetInstantiatedVersioned { get; private set; }
-		public VersionedPropertyMapping(PropertyInfo propertyInfo) : this() {
+
+		public VersionedPropertyMapping(PropertyInfo propertyInfo) {
 			var getter = GetValueGetter(propertyInfo);
 			var ctor = GetCtor(propertyInfo.PropertyType);
 			var setter = GetValueSetter(propertyInfo);
@@ -18,12 +19,14 @@ namespace EntityFramework.VersionedProperties {
 				                           return versioned;
 			                           };
 		}
+
 		private static Func<Versioned> GetCtor(Type type) {
 			return Expression.Lambda<Func<Versioned>>(Expression.New(type)).Compile();
 		}
+
 		private static Action<IVersionedProperties, Versioned> GetValueSetter(PropertyInfo propertyInfo) {
-			var instance = Expression.Parameter(typeof(IVersionedProperties));
-			var argument = Expression.Parameter(typeof(Versioned));
+			var instance = Expression.Parameter(typeof (IVersionedProperties));
+			var argument = Expression.Parameter(typeof (Versioned));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
 				propertyInfo.GetSetMethod(true),
@@ -31,8 +34,9 @@ namespace EntityFramework.VersionedProperties {
 				);
 			return Expression.Lambda<Action<IVersionedProperties, Versioned>>(setterCall, instance, argument).Compile();
 		}
+
 		private static Func<IVersionedProperties, Versioned> GetValueGetter(PropertyInfo propertyInfo) {
-			var instance = Expression.Parameter(typeof(IVersionedProperties));
+			var instance = Expression.Parameter(typeof (IVersionedProperties));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
 				propertyInfo.GetGetMethod()

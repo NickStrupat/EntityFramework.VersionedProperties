@@ -34,17 +34,21 @@
     <DocumentationFile>bin\Release\EntityFramework.VersionedProperties.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.Extended">
-      <HintPath>..\packages\EntityFramework.Extended.6.1.0.121\lib\net40\EntityFramework.Extended.dll</HintPath>
+    <Reference Include="EntityFramework.Extended, Version=6.0.0.0, Culture=neutral, PublicKeyToken=05b7e29bdd433584, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.Extended.6.1.0.133\lib\net40\EntityFramework.Extended.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.Triggers">
-      <HintPath>..\packages\EntityFramework.Triggers.5.0.2\lib\net40\EntityFramework.Triggers.dll</HintPath>
+    <Reference Include="EntityFramework.Triggers, Version=5.0.3.246, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.Triggers.5.0.3\lib\net40\EntityFramework.Triggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
