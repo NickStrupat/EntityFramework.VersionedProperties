@@ -46,7 +46,7 @@ namespace EntityFramework.VersionedProperties {
 		/// </code>
 		/// </example>
 		public static void InitializeVersionedProperties<TVersionedProperties>(this TVersionedProperties versionedProperties)
-			where TVersionedProperties : class, IVersionedProperties, ITriggerable, new()
+			where TVersionedProperties : class, IVersionedProperties, ITriggerable
 		{
 			if (VersionedPropertiesObjectHasBeenInitialized(versionedProperties))
 				return;
