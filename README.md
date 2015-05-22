@@ -73,18 +73,21 @@ When accessing your versioned property, the `Value` property represents the curr
 	using System.Linq;
 	using EntityFramework.Triggers;
 	using EntityFramework.VersionedProperties;
-
+	
 	namespace Example {
 		class Program {
 			public enum Standing { Good, Fair, Poor }
 			public class StandingVersion : VersionBase<Standing> { }
 			[ComplexType]
-			public class VersionedStanding : VersionedBase<Standing, StandingVersion> {
-				protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionDbSet {
-					get { return x => ((Context) x).StandingVersions; }
+			public class VersionedStanding : VersionedTypeBase<Standing, StandingVersion, IStandingVersions> {
+				protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet {
+					get { return x => x.StandingVersions; }
 				}
 			}
-
+			public interface IStandingVersions {
+				DbSet<StandingVersion> StandingVersions { get; set; }
+			}
+	
 			[ComplexType]
 			public class Friendship {
 				public Int64 PersonId { get; protected set; } // We're unable to apply a foreign constraint here due to current limitations of complex types in Entity Framework 6
@@ -97,14 +100,23 @@ When accessing your versioned property, the `Value` property represents the curr
 			}
 			public class FriendshipVersion : VersionBase<Friendship> {}
 			[ComplexType]
-			public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion> {
+			public class VersionedFriendship : RequiredValueVersionedTypeBase<Friendship, FriendshipVersion, IFriendshipVersions> {
 				protected override Friendship DefaultValue { get { return new Friendship(); } }
-				protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionDbSet {
-					get { return x => ((Context)x).FriendshipVersions; }
+				protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet {
+					get { return x => x.FriendshipVersions; }
 				}
 			}
-
-			public class Person : IVersionedProperties {
+			public interface IFriendshipVersions {
+				DbSet<FriendshipVersion> FriendshipVersions { get; set; }
+			}
+	
+			public class VersionedProperties : IVersionedProperties {
+				public VersionedProperties() {
+					this.InitializeVersionedProperties();
+				}
+			}
+	
+			public class Person : VersionedProperties {
 				public Int64 Id { get; protected set; }
 				public DateTime Inserted { get; protected set; }
 				public DateTime Updated { get; protected set; }
@@ -113,34 +125,34 @@ When accessing your versioned property, the `Value` property represents the curr
 				public VersionedDbGeography Location { get; protected set; }
 				public VersionedStanding Standing { get; protected set; }
 				public VersionedFriendship Friendship { get; protected set; }
-
+	
 				public Person() {
 					this.InitializeVersionedProperties();
 					this.Triggers().Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
 					this.Triggers().Updating += e => e.Entity.Updated = DateTime.Now;
 				}
 			}
-
-			public class Context : DbContextWithVersionedProperties {
+	
+			public class Context : DbContextWithVersionedProperties, IStandingVersions, IFriendshipVersions {
 				public DbSet<Person> People { get; set; }
 				public DbSet<StandingVersion> StandingVersions { get; set; }
 				public DbSet<FriendshipVersion> FriendshipVersions { get; set; }
 			}
-
+	
 			static void Main(String[] args) {
 				using (var context = new Context()) {
 					context.Database.Delete();
 					context.Database.Create();
 					var nickStrupat = new Person {
-													 FirstName = { Value = "Nick" },
+						                             FirstName = { Value = "Nick" },
 													 LastName = { Value = "Strupat" },
 													 Location = { Value = DbGeography.FromText("POINT(-81.24862 42.948881)") },
 													 Friendship = { Value = new Friendship(42, false) },
-												 };
+					                             };
 					var johnSmith = new Person {
-												   FirstName = { Value = "John" },
-												   LastName = { Value = "Smith" }
-											   };
+						                           FirstName = { Value = "John" },
+						                           LastName = { Value = "Smith" }
+					                           };
 					context.People.Add(johnSmith);
 					context.People.Add(nickStrupat);
 					context.SaveChanges();
