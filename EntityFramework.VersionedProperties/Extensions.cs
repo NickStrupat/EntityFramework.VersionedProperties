@@ -4,16 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFramework.Triggers;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace EntityFramework.VersionedProperties {
 	public static class Extensions {
 		private static readonly ConcurrentDictionary<Type, VersionedPropertyMapping[]> versionedPropertyMappingsCache = new ConcurrentDictionary<Type, VersionedPropertyMapping[]>();
 
-		private static IEnumerable<VersionedPropertyMapping> GetVersionedPropertyMappings<TVersionedProperties>() where TVersionedProperties : IVersionedProperties {
+		private static IEnumerable<VersionedPropertyMapping> GetVersionedPropertyMappings(IVersionedProperties versionedProperties) {
 			return versionedPropertyMappingsCache.GetOrAdd(
-				typeof(TVersionedProperties),
-				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(Versioned).IsAssignableFrom(x.PropertyType)).Select(x => new VersionedPropertyMapping(x)).ToArray()
+				versionedProperties.GetType(),
+				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(VersionedType).IsAssignableFrom(x.PropertyType)).Select(x => new VersionedPropertyMapping(x)).ToArray()
 			);
+		}
+
+		private static readonly ConditionalWeakTable<IVersionedProperties, Object> initializedVersionedProperties = new ConditionalWeakTable<IVersionedProperties, Object>();
+
+		private static Boolean VersionedPropertiesObjectHasBeenInitialized(IVersionedProperties versionedProperties) {
+			Object hold;
+			if (initializedVersionedProperties.TryGetValue(versionedProperties, out hold))
+				return true;
+			initializedVersionedProperties.Add(versionedProperties, null);
+			return false;
 		}
 
 		/// <summary>
@@ -37,13 +48,15 @@ namespace EntityFramework.VersionedProperties {
 		public static void InitializeVersionedProperties<TVersionedProperties>(this TVersionedProperties versionedProperties)
 			where TVersionedProperties : class, IVersionedProperties, ITriggerable, new()
 		{
+			if (VersionedPropertiesObjectHasBeenInitialized(versionedProperties))
+				return;
 			var triggers = versionedProperties.Triggers();
-			var versionedPropertyMappings = GetVersionedPropertyMappings<TVersionedProperties>();
+			var versionedPropertyMappings = GetVersionedPropertyMappings(versionedProperties);
 			foreach (var versionedPropertyMapping in versionedPropertyMappings) {
 				var versioned = versionedPropertyMapping.GetInstantiatedVersioned(versionedProperties);
-				triggers.Inserting += entry => versioned.AddVersionsToDbContextWithVersionedProperties((IDbContextWithVersionedProperties) entry.Context);
-				triggers.Updating += entry => versioned.AddVersionsToDbContextWithVersionedProperties((IDbContextWithVersionedProperties) entry.Context);
-				triggers.Deleted += entry => versioned.DeleteVersionsFromDbContextWithVersionedProperties((IDbContextWithVersionedProperties) entry.Context);
+				triggers.Inserting += entry => versioned.AddVersionsToDbContextWithVersionedProperties(entry.Context);
+				triggers.Updating += entry => versioned.AddVersionsToDbContextWithVersionedProperties(entry.Context);
+				triggers.Deleted += entry => versioned.RemoveVersionsFromDbContextWithVersionedProperties(entry.Context);
 			}
 		}
 	}

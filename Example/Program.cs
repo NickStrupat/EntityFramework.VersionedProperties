@@ -11,10 +11,13 @@ namespace Example {
 		public enum Standing { Good, Fair, Poor }
 		public class StandingVersion : VersionBase<Standing> { }
 		[ComplexType]
-		public class VersionedStanding : VersionedBase<Standing, StandingVersion> {
-			protected override Func<IDbContextWithVersionedProperties, DbSet<StandingVersion>> VersionDbSet {
-				get { return x => ((Context) x).StandingVersions; }
+		public class VersionedStanding : VersionedTypeBase<Standing, StandingVersion, IStandingVersions> {
+			protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet {
+				get { return x => x.StandingVersions; }
 			}
+		}
+		public interface IStandingVersions {
+			DbSet<StandingVersion> StandingVersions { get; set; }
 		}
 
 		[ComplexType]
@@ -29,14 +32,23 @@ namespace Example {
 		}
 		public class FriendshipVersion : VersionBase<Friendship> {}
 		[ComplexType]
-		public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion> {
+		public class VersionedFriendship : RequiredValueVersionedTypeBase<Friendship, FriendshipVersion, IFriendshipVersions> {
 			protected override Friendship DefaultValue { get { return new Friendship(); } }
-			protected override Func<IDbContextWithVersionedProperties, DbSet<FriendshipVersion>> VersionDbSet {
-				get { return x => ((Context)x).FriendshipVersions; }
+			protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet {
+				get { return x => x.FriendshipVersions; }
+			}
+		}
+		public interface IFriendshipVersions {
+			DbSet<FriendshipVersion> FriendshipVersions { get; set; }
+		}
+
+		public class VersionedProperties : IVersionedProperties {
+			public VersionedProperties() {
+				this.InitializeVersionedProperties();
 			}
 		}
 
-		public class Person : IVersionedProperties {
+		public class Person : VersionedProperties {
 			public Int64 Id { get; protected set; }
 			public DateTime Inserted { get; protected set; }
 			public DateTime Updated { get; protected set; }
@@ -53,7 +65,7 @@ namespace Example {
 			}
 		}
 
-		public class Context : DbContextWithVersionedProperties {
+		public class Context : DbContextWithVersionedProperties, IStandingVersions, IFriendshipVersions {
 			public DbSet<Person> People { get; set; }
 			public DbSet<StandingVersion> StandingVersions { get; set; }
 			public DbSet<FriendshipVersion> FriendshipVersions { get; set; }

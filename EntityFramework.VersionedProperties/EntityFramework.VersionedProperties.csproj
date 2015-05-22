@@ -59,9 +59,34 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IVersionedProperties.cs" />
     <Compile Include="IDbContextWithVersionedProperties.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\VersionedTypeBase.cs" />
+    <Compile Include="VersionedTypes\VersionedBoolean.cs" />
+    <Compile Include="VersionedTypes\VersionedDateTime.cs" />
+    <Compile Include="VersionedTypes\VersionedDateTimeOffset.cs" />
+    <Compile Include="VersionedTypes\VersionedDbGeography.cs" />
+    <Compile Include="VersionedTypes\VersionedDbGeometry.cs" />
+    <Compile Include="VersionedTypes\VersionedDecimal.cs" />
+    <Compile Include="VersionedTypes\VersionedDouble.cs" />
+    <Compile Include="VersionedTypes\VersionedGuid.cs" />
+    <Compile Include="VersionedTypes\VersionedInt32.cs" />
+    <Compile Include="VersionedTypes\VersionedInt64.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableBoolean.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDateTime.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDateTimeOffset.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDbGeography.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDbGeometry.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDecimal.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableDouble.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableGuid.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableInt32.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableInt64.cs" />
+    <Compile Include="VersionedTypes\VersionedNullableString.cs" />
+    <Compile Include="VersionedTypes\VersionedString.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\NullableVersionedTypeBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbContextWithVersionedProperties.cs" />
-    <Compile Include="Versioned.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\RequiredValueVersionedTypeBase.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\VersionedType.cs" />
     <Compile Include="Version.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -71,6 +96,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

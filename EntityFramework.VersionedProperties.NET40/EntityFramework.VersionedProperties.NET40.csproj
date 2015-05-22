@@ -82,11 +82,86 @@
     <Compile Include="..\EntityFramework.VersionedProperties\Version.cs">
       <Link>Version.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\Versioned.cs">
-      <Link>Versioned.cs</Link>
-    </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedPropertyMapping.cs">
       <Link>VersionedPropertyMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableVersionedTypeBase.cs">
+      <Link>VersionedTypes\BaseTypes\NullableVersionedTypeBase.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\RequiredValueVersionedTypeBase.cs">
+      <Link>VersionedTypes\BaseTypes\RequiredValueVersionedTypeBase.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedType.cs">
+      <Link>VersionedTypes\BaseTypes\VersionedType.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedTypeBase.cs">
+      <Link>VersionedTypes\BaseTypes\VersionedTypeBase.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedBoolean.cs">
+      <Link>VersionedTypes\VersionedBoolean.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDateTime.cs">
+      <Link>VersionedTypes\VersionedDateTime.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDateTimeOffset.cs">
+      <Link>VersionedTypes\VersionedDateTimeOffset.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDbGeography.cs">
+      <Link>VersionedTypes\VersionedDbGeography.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDbGeometry.cs">
+      <Link>VersionedTypes\VersionedDbGeometry.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDecimal.cs">
+      <Link>VersionedTypes\VersionedDecimal.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDouble.cs">
+      <Link>VersionedTypes\VersionedDouble.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedGuid.cs">
+      <Link>VersionedTypes\VersionedGuid.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedInt32.cs">
+      <Link>VersionedTypes\VersionedInt32.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedInt64.cs">
+      <Link>VersionedTypes\VersionedInt64.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableBoolean.cs">
+      <Link>VersionedTypes\VersionedNullableBoolean.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDateTime.cs">
+      <Link>VersionedTypes\VersionedNullableDateTime.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDateTimeOffset.cs">
+      <Link>VersionedTypes\VersionedNullableDateTimeOffset.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDbGeography.cs">
+      <Link>VersionedTypes\VersionedNullableDbGeography.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDbGeometry.cs">
+      <Link>VersionedTypes\VersionedNullableDbGeometry.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDecimal.cs">
+      <Link>VersionedTypes\VersionedNullableDecimal.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDouble.cs">
+      <Link>VersionedTypes\VersionedNullableDouble.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableGuid.cs">
+      <Link>VersionedTypes\VersionedNullableGuid.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableInt32.cs">
+      <Link>VersionedTypes\VersionedNullableInt32.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableInt64.cs">
+      <Link>VersionedTypes\VersionedNullableInt64.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableString.cs">
+      <Link>VersionedTypes\VersionedNullableString.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedString.cs">
+      <Link>VersionedTypes\VersionedString.cs</Link>
     </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedVersionBase.cs">
       <Link>VersionedVersionBase.cs</Link>
