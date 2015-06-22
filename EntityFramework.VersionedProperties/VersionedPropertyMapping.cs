@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace EntityFramework.VersionedProperties {
 	internal class VersionedPropertyMapping {
-		public Func<IVersionedProperties, VersionedType> GetInstantiatedVersioned { get; private set; }
+		public Func<IVersionedProperties, Versioned> GetInstantiatedVersioned { get; private set; }
 
 		public VersionedPropertyMapping(PropertyInfo propertyInfo) {
 			var getter = GetValueGetter(propertyInfo);
@@ -20,28 +20,28 @@ namespace EntityFramework.VersionedProperties {
 			                           };
 		}
 
-		private static Func<VersionedType> GetCtor(Type type) {
-			return Expression.Lambda<Func<VersionedType>>(Expression.New(type)).Compile();
+		private static Func<Versioned> GetCtor(Type type) {
+			return Expression.Lambda<Func<Versioned>>(Expression.New(type)).Compile();
 		}
 
-		private static Action<IVersionedProperties, VersionedType> GetValueSetter(PropertyInfo propertyInfo) {
+		private static Action<IVersionedProperties, Versioned> GetValueSetter(PropertyInfo propertyInfo) {
 			var instance = Expression.Parameter(typeof (IVersionedProperties));
-			var argument = Expression.Parameter(typeof (VersionedType));
+			var argument = Expression.Parameter(typeof (Versioned));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
 				propertyInfo.GetSetMethod(true),
 				Expression.Convert(argument, propertyInfo.PropertyType)
 				);
-			return Expression.Lambda<Action<IVersionedProperties, VersionedType>>(setterCall, instance, argument).Compile();
+			return Expression.Lambda<Action<IVersionedProperties, Versioned>>(setterCall, instance, argument).Compile();
 		}
 
-		private static Func<IVersionedProperties, VersionedType> GetValueGetter(PropertyInfo propertyInfo) {
+		private static Func<IVersionedProperties, Versioned> GetValueGetter(PropertyInfo propertyInfo) {
 			var instance = Expression.Parameter(typeof (IVersionedProperties));
 			var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
 				propertyInfo.GetGetMethod()
 				);
-			return Expression.Lambda<Func<IVersionedProperties, VersionedType>>(setterCall, instance).Compile();
+			return Expression.Lambda<Func<IVersionedProperties, Versioned>>(setterCall, instance).Compile();
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Data.Entity.Spatial;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedDbGeometry : RequiredValueVersionedTypeBase<DbGeometry, DbGeometryVersion, IDbGeometryVersions> {
+	public class VersionedDbGeometry : RequiredValueVersionedBase<DbGeometry, DbGeometryVersion, IDbGeometryVersions> {
 		protected override DbGeometry DefaultValue {
 			get { return DbGeometry.FromText("POINT EMPTY"); }
 		}

@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedGuid : VersionedTypeBase<Guid, GuidVersion, IGuidVersions> {
+	public class VersionedGuid : VersionedBase<Guid, GuidVersion, IGuidVersions> {
 		protected override Func<IGuidVersions, DbSet<GuidVersion>> VersionDbSet {
 			get { return x => x.GuidVersions; }
 		}

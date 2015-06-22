@@ -5,7 +5,7 @@ using System.Linq;
 using EntityFramework.Extensions;
 
 namespace EntityFramework.VersionedProperties {
-	public abstract class VersionedTypeBase<TValue, TVersion, TIVersions> : VersionedType
+	public abstract class VersionedBase<TValue, TVersion, TIVersions> : Versioned
 		where TVersion : VersionBase<TValue>, new()
 	{
 		public Guid Id { get; internal set; }
@@ -14,7 +14,7 @@ namespace EntityFramework.VersionedProperties {
 		public virtual TValue Value {
 			get { return value; }
 			set {
-				if (!(this is NullableVersionedTypeBase<TValue, TVersion, TIVersions>) && value == null)
+				if (!(this is NullableVersionedBase<TValue, TVersion, TIVersions>) && value == null)
 					throw new ArgumentNullException("value");
 				if (EqualityComparer<TValue>.Default.Equals(this.value, value))
 					return;
@@ -33,9 +33,10 @@ namespace EntityFramework.VersionedProperties {
 			get { return default(TValue); }
 		}
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
-		protected VersionedTypeBase() {
+		protected VersionedBase() {
 			Modified = DateTime.Now;
-			value = DefaultValue;
+			if (DefaultValue != null)
+				value = DefaultValue;
 			AddVersionsToDbContextWithVersionedProperties = AddVersions;
 			RemoveVersionsFromDbContextWithVersionedProperties = RemoveVersions;
 		}

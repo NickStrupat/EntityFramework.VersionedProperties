@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedDecimal : VersionedTypeBase<Decimal, DecimalVersion, IDecimalVersions> {
+	public class VersionedDecimal : VersionedBase<Decimal, DecimalVersion, IDecimalVersions> {
 		protected override Func<IDecimalVersions, DbSet<DecimalVersion>> VersionDbSet {
 			get { return x => x.DecimalVersions; }
 		}

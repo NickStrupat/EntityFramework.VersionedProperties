@@ -11,7 +11,7 @@ namespace Example {
 		public enum Standing { Good, Fair, Poor }
 		public class StandingVersion : VersionBase<Standing> { }
 		[ComplexType]
-		public class VersionedStanding : VersionedTypeBase<Standing, StandingVersion, IStandingVersions> {
+		public class VersionedStanding : VersionedBase<Standing, StandingVersion, IStandingVersions> {
 			protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet {
 				get { return x => x.StandingVersions; }
 			}
@@ -32,7 +32,7 @@ namespace Example {
 		}
 		public class FriendshipVersion : VersionBase<Friendship> {}
 		[ComplexType]
-		public class VersionedFriendship : RequiredValueVersionedTypeBase<Friendship, FriendshipVersion, IFriendshipVersions> {
+		public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion, IFriendshipVersions> {
 			protected override Friendship DefaultValue { get { return new Friendship(); } }
 			protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet {
 				get { return x => x.FriendshipVersions; }

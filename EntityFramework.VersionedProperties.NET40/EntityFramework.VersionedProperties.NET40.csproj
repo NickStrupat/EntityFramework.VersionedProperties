@@ -46,9 +46,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.Triggers, Version=5.0.3.246, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework.Triggers, Version=5.1.1.298, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.Triggers.5.0.3\lib\net40\EntityFramework.Triggers.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.Triggers.5.1.1-prerelease\lib\net40\EntityFramework.Triggers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -85,17 +85,17 @@
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedPropertyMapping.cs">
       <Link>VersionedPropertyMapping.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableVersionedTypeBase.cs">
-      <Link>VersionedTypes\BaseTypes\NullableVersionedTypeBase.cs</Link>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableVersionedBase.cs">
+      <Link>VersionedTypes\BaseTypes\NullableVersionedBase.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\RequiredValueVersionedTypeBase.cs">
-      <Link>VersionedTypes\BaseTypes\RequiredValueVersionedTypeBase.cs</Link>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\RequiredValueVersionedBase.cs">
+      <Link>VersionedTypes\BaseTypes\RequiredValueVersionedBase.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedType.cs">
-      <Link>VersionedTypes\BaseTypes\VersionedType.cs</Link>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\Versioned.cs">
+      <Link>VersionedTypes\BaseTypes\Versioned.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedTypeBase.cs">
-      <Link>VersionedTypes\BaseTypes\VersionedTypeBase.cs</Link>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedBase.cs">
+      <Link>VersionedTypes\BaseTypes\VersionedBase.cs</Link>
     </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedBoolean.cs">
       <Link>VersionedTypes\VersionedBoolean.cs</Link>

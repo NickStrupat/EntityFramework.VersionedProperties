@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedString : RequiredValueVersionedTypeBase<String, StringVersion, IStringVersions> {
+	public class VersionedString : RequiredValueVersionedBase<String, StringVersion, IStringVersions> {
 		protected override String DefaultValue {
 			get { return String.Empty; }
 		}

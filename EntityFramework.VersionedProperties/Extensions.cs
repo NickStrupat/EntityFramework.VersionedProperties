@@ -13,7 +13,10 @@ namespace EntityFramework.VersionedProperties {
 		private static IEnumerable<VersionedPropertyMapping> GetVersionedPropertyMappings(IVersionedProperties versionedProperties) {
 			return versionedPropertyMappingsCache.GetOrAdd(
 				versionedProperties.GetType(),
-				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => typeof(VersionedType).IsAssignableFrom(x.PropertyType)).Select(x => new VersionedPropertyMapping(x)).ToArray()
+				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                      .Where(x => typeof(Versioned).IsAssignableFrom(x.PropertyType))
+                      .Select(x => new VersionedPropertyMapping(x))
+                      .ToArray()
 			);
 		}
 

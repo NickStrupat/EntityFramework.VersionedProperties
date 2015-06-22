@@ -5,7 +5,7 @@ using System.Data.Entity.Spatial;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedDbGeography : RequiredValueVersionedTypeBase<DbGeography, DbGeographyVersion, IDbGeographyVersions> {
+	public class VersionedDbGeography : RequiredValueVersionedBase<DbGeography, DbGeographyVersion, IDbGeographyVersions> {
 		protected override DbGeography DefaultValue {
 			get { return DbGeography.FromText("POINT EMPTY"); }
 		}
