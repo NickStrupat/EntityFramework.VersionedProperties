@@ -7,7 +7,8 @@ namespace EntityFramework.VersionedProperties {
 	/// <see cref="Triggers.Extensions.SaveChangesWithTriggers"/> and <see cref="Triggers.Extensions.SaveChangesWithTriggersAsync"/> respectively to use versioned properties.
 	/// </summary>
 	public interface IDbContextWithVersionedProperties
-		: IDateTimeVersions
+		: IBooleanVersions
+		, IDateTimeVersions
 		, IDateTimeOffsetVersions
 		, IDbGeographyVersions
 		, IDbGeometryVersions
