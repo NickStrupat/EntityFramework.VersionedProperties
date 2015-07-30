@@ -27,9 +27,12 @@ namespace EntityFramework.VersionedProperties {
 		private static Action<IVersionedProperties, Versioned> GetValueSetter(PropertyInfo propertyInfo) {
 			var instance = Expression.Parameter(typeof (IVersionedProperties));
 			var argument = Expression.Parameter(typeof (Versioned));
-			var setterCall = Expression.Call(
+            var method = propertyInfo.DeclaringType.GetProperty(propertyInfo.Name).GetSetMethod(true);
+            if (method == null)
+                throw new InvalidOperationException("Property setter not found");
+            var setterCall = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
-				propertyInfo.GetSetMethod(true),
+                method,
 				Expression.Convert(argument, propertyInfo.PropertyType)
 				);
 			return Expression.Lambda<Action<IVersionedProperties, Versioned>>(setterCall, instance, argument).Compile();
