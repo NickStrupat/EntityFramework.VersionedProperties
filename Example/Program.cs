@@ -12,9 +12,7 @@ namespace Example {
 		public class StandingVersion : VersionBase<Standing> { }
 		[ComplexType]
 		public class VersionedStanding : VersionedBase<Standing, StandingVersion, IStandingVersions> {
-			protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet {
-				get { return x => x.StandingVersions; }
-			}
+			protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet => x => x.StandingVersions;
 		}
 		public interface IStandingVersions {
 			DbSet<StandingVersion> StandingVersions { get; set; }
@@ -22,8 +20,8 @@ namespace Example {
 
 		[ComplexType]
 		public class Friendship {
-			public Int64 PersonId { get; protected set; } // We're unable to apply a foreign constraint here due to current limitations of complex types in Entity Framework 6
-			public Boolean IsBestFriend { get; protected set; }
+			public Int64 PersonId { get; private set; } // We're unable to apply a foreign constraint here due to current limitations of complex types in Entity Framework 6
+			public Boolean IsBestFriend { get; private set; }
 			public Friendship() {}
 			public Friendship(Int64 personId, Boolean isBestFriend) {
 				PersonId = personId;
@@ -33,10 +31,8 @@ namespace Example {
 		public class FriendshipVersion : VersionBase<Friendship> {}
 		[ComplexType]
 		public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion, IFriendshipVersions> {
-			protected override Friendship DefaultValue { get { return new Friendship(); } }
-			protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet {
-				get { return x => x.FriendshipVersions; }
-			}
+			protected override Friendship DefaultValue => new Friendship();
+			protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet => x => x.FriendshipVersions;
 		}
 		public interface IFriendshipVersions {
 			DbSet<FriendshipVersion> FriendshipVersions { get; set; }
@@ -49,14 +45,14 @@ namespace Example {
 		}
 
 		public class Person : VersionedProperties {
-			public Int64 Id { get; protected set; }
-			public DateTime Inserted { get; protected set; }
-			public DateTime Updated { get; protected set; }
-			public VersionedString FirstName { get; protected set; }
-			public VersionedString LastName { get; protected set; }
-			public VersionedDbGeography Location { get; protected set; }
-			public VersionedStanding Standing { get; protected set; }
-			public VersionedFriendship Friendship { get; protected set; }
+			public Int64 Id { get; private set; }
+			public DateTime Inserted { get; private set; }
+			public DateTime Updated { get; private set; }
+			public VersionedString FirstName { get; private set; }
+			public VersionedString LastName { get; private set; }
+			public VersionedDbGeography Location { get; private set; }
+			public VersionedStanding Standing { get; private set; }
+			public VersionedFriendship Friendship { get; private set; }
 
 			public Person() {
 				this.InitializeVersionedProperties();

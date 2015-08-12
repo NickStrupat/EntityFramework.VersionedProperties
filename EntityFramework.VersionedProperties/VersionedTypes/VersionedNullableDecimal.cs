@@ -5,8 +5,6 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
 	public class VersionedNullableDecimal : NullableVersionedBase<Decimal?, NullableDecimalVersion, INullableDecimalVersions> {
-		protected override Func<INullableDecimalVersions, DbSet<NullableDecimalVersion>> VersionDbSet {
-			get { return x => x.NullableDecimalVersions; }
-		}
+		protected override Func<INullableDecimalVersions, DbSet<NullableDecimalVersion>> VersionDbSet => x => x.NullableDecimalVersions;
 	}
 }

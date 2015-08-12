@@ -14,9 +14,9 @@ namespace EntityFramework.VersionedProperties {
 			return versionedPropertyMappingsCache.GetOrAdd(
 				versionedProperties.GetType(),
 				v => v.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                      .Where(x => typeof(Versioned).IsAssignableFrom(x.PropertyType))
-                      .Select(x => new VersionedPropertyMapping(x))
-                      .ToArray()
+				      .Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType))
+				      .Select(x => new VersionedPropertyMapping(x))
+				      .ToArray()
 			);
 		}
 
@@ -37,20 +37,18 @@ namespace EntityFramework.VersionedProperties {
 		/// <param name="versionedProperties"></param>
 		/// <example>
 		/// <code>
-		///		class Person : IVersionedProperties&lt;Person&gt; {
-		///			public String Name { get; set; }
-		///			public VersionedString NickName { get; set; }
-		///			public Person(String name, String nickName) {
-		///				this.InitializeVersionedProperties();
-		///				Name = name;
-		///				NickName.Value = nickName;
-		///			}
-		///		}
+		/// 	class Person : IVersionedProperties&lt;Person&gt; {
+		/// 		public String Name { get; set; }
+		/// 		public VersionedString NickName { get; set; }
+		/// 		public Person(String name, String nickName) {
+		/// 			this.InitializeVersionedProperties();
+		/// 			Name = name;
+		/// 			NickName.Value = nickName;
+		/// 		}
+		/// 	}
 		/// </code>
 		/// </example>
-		public static void InitializeVersionedProperties<TVersionedProperties>(this TVersionedProperties versionedProperties)
-			where TVersionedProperties : class, IVersionedProperties, ITriggerable
-		{
+		public static void InitializeVersionedProperties<TVersionedProperties>(this TVersionedProperties versionedProperties) where TVersionedProperties : class, IVersionedProperties, ITriggerable {
 			if (VersionedPropertiesObjectHasBeenInitialized(versionedProperties))
 				return;
 			var triggers = versionedProperties.Triggers();

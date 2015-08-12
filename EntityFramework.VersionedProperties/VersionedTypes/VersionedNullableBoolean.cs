@@ -5,8 +5,6 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
 	public class VersionedNullableBoolean : NullableVersionedBase<Boolean?, NullableBooleanVersion, INullableBooleanVersions> {
-		protected override Func<INullableBooleanVersions, DbSet<NullableBooleanVersion>> VersionDbSet {
-			get { return x => x.NullableBooleanVersions; }
-		}
+		protected override Func<INullableBooleanVersions, DbSet<NullableBooleanVersion>> VersionDbSet => x => x.NullableBooleanVersions;
 	}
 }

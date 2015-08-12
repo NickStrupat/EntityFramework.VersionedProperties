@@ -53,4 +53,4 @@ namespace EntityFramework.VersionedProperties {
 	public interface INullableInt32Versions          { DbSet<NullableInt32Version         > NullableInt32Versions          { get; set; } }
 	public interface INullableInt64Versions          { DbSet<NullableInt64Version         > NullableInt64Versions          { get; set; } }
 	public interface INullableStringVersions         { DbSet<NullableStringVersion        > NullableStringVersions         { get; set; } }
-}      
+}

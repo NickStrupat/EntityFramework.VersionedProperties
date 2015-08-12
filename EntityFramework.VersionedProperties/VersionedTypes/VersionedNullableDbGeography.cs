@@ -6,8 +6,6 @@ using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
 	public class VersionedNullableDbGeography : NullableVersionedBase<DbGeography, NullableDbGeographyVersion, INullableDbGeographyVersions> {
-		protected override Func<INullableDbGeographyVersions, DbSet<NullableDbGeographyVersion>> VersionDbSet {
-			get { return x => x.NullableDbGeographyVersions; }
-		}
+		protected override Func<INullableDbGeographyVersions, DbSet<NullableDbGeographyVersion>> VersionDbSet => x => x.NullableDbGeographyVersions;
 	}
 }

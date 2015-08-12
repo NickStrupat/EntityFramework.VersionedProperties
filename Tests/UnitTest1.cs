@@ -33,12 +33,11 @@ namespace EntityFramework.VersionedProperties.Tests {
 	    }
 
         [TestMethod]
-        public void TestMethod1() {
-            TestMethod1(true);
-        }
+        public void TestMethod1() => TestMethod1(true);
 
-        private void TestMethod1(Boolean deleteDbFirst) {
+	    private void TestMethod1(Boolean deleteDbFirst) {
             using (var context = new Context()) {
+                var people = context.People.ToList();
                 if (deleteDbFirst && context.Database.Exists()) {
                     context.Database.Delete();
                     context.Database.Create();
