@@ -17,7 +17,7 @@ namespace EntityFramework.VersionedProperties.Tests {
 		    manualResetEvent.WaitOne();
 			TestMethod1(false);
 	    }
-	    //[TestMethod]
+	    [TestMethod]
 	    public void TestAsync() {
 			var list = new ManualResetEvent[32];
 		    for (var i = 0; i != list.Length; ++i) {
@@ -37,7 +37,6 @@ namespace EntityFramework.VersionedProperties.Tests {
 
 	    private void TestMethod1(Boolean deleteDbFirst) {
             using (var context = new Context()) {
-                var people = context.People.ToList();
                 if (deleteDbFirst && context.Database.Exists()) {
                     context.Database.Delete();
                     context.Database.Create();

@@ -22,12 +22,14 @@ namespace EntityFramework.VersionedProperties {
 
 		private static readonly ConditionalWeakTable<IVersionedProperties, Object> initializedVersionedProperties = new ConditionalWeakTable<IVersionedProperties, Object>();
 
-		private static Boolean VersionedPropertiesObjectHasBeenInitialized(IVersionedProperties versionedProperties) {
-			Object hold;
-			if (initializedVersionedProperties.TryGetValue(versionedProperties, out hold))
-				return true;
-			initializedVersionedProperties.Add(versionedProperties, null);
-			return false;
+		private static Boolean TryMarkInitialized(IVersionedProperties versionedProperties) {
+			lock (initializedVersionedProperties) {
+				Object hold;
+				if (initializedVersionedProperties.TryGetValue(versionedProperties, out hold))
+					return true;
+				initializedVersionedProperties.Add(versionedProperties, null);
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -49,15 +51,17 @@ namespace EntityFramework.VersionedProperties {
 		/// </code>
 		/// </example>
 		public static void InitializeVersionedProperties<TVersionedProperties>(this TVersionedProperties versionedProperties) where TVersionedProperties : class, IVersionedProperties, ITriggerable {
-			if (VersionedPropertiesObjectHasBeenInitialized(versionedProperties))
+			if (versionedProperties == null)
+				throw new ArgumentNullException(nameof(versionedProperties));
+			if (TryMarkInitialized(versionedProperties))
 				return;
 			var triggers = versionedProperties.Triggers();
 			var versionedPropertyMappings = GetVersionedPropertyMappings(versionedProperties);
 			foreach (var versionedPropertyMapping in versionedPropertyMappings) {
 				var versioned = versionedPropertyMapping.GetInstantiatedVersioned(versionedProperties);
-				triggers.Inserting += entry => versioned.AddVersionsToDbContextWithVersionedProperties(entry.Context);
-				triggers.Updating += entry => versioned.AddVersionsToDbContextWithVersionedProperties(entry.Context);
-				triggers.Deleted += entry => versioned.RemoveVersionsFromDbContextWithVersionedProperties(entry.Context);
+				triggers.Inserting += entry => versioned.AddVersionsToDbContext(entry.Context);
+				triggers.Updating += entry => versioned.AddVersionsToDbContext(entry.Context);
+				triggers.Deleted += entry => versioned.RemoveVersionsFromDbContext(entry.Context);
 			}
 		}
 	}

@@ -44,13 +44,13 @@ namespace EntityFramework.VersionedProperties {
 
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 
-		void IVersioned.AddVersionsToDbContextWithVersionedProperties(Object dbContext) {
+		void IVersioned.AddVersionsToDbContext(Object dbContext) {
 			CheckDbContext(dbContext);
 			VersionDbSet((TIVersions)dbContext).AddRange(InternalLocalVersions);
 			InternalLocalVersions.Clear();
 		}
 
-		void IVersioned.RemoveVersionsFromDbContextWithVersionedProperties(Object dbContext) {
+		void IVersioned.RemoveVersionsFromDbContext(Object dbContext) {
 			CheckDbContext(dbContext);
 			VersionDbSet((TIVersions)dbContext).Where(x => x.VersionedId == Id).Delete();
 			InternalLocalVersions.Clear();
