@@ -43,9 +43,9 @@ When accessing your versioned property, the `Value` property represents the curr
 #### Basic
 
 	public class Person : IVersionedProperties {
-		public Int64 Id { get; set; }
+		public Int64 Id { get; private set; }
 		public String Name { get; set; }
-		public VersionedDateTime CheckIn { get; set; }
+		public VersionedDateTime CheckIn { get; private set; }
 		
 		public Person() { this.InitializeVersionedProperties(); }
 	}
@@ -90,7 +90,7 @@ When accessing your versioned property, the `Value` property represents the curr
 	
 			[ComplexType]
 			public class Friendship {
-				public Int64 PersonId { get; protected set; } // We're unable to apply a foreign constraint here due to current limitations of complex types in Entity Framework 6
+				public Int64 PersonId { get; private set; } // We're unable to apply a foreign constraint here due to current limitations of complex types in Entity Framework 6
 				public Boolean IsBestFriend { get; protected set; }
 				public Friendship() {}
 				public Friendship(Int64 personId, Boolean isBestFriend) {
@@ -117,14 +117,14 @@ When accessing your versioned property, the `Value` property represents the curr
 			}
 	
 			public class Person : VersionedProperties {
-				public Int64 Id { get; protected set; }
-				public DateTime Inserted { get; protected set; }
-				public DateTime Updated { get; protected set; }
-				public VersionedString FirstName { get; protected set; }
-				public VersionedString LastName { get; protected set; }
-				public VersionedDbGeography Location { get; protected set; }
-				public VersionedStanding Standing { get; protected set; }
-				public VersionedFriendship Friendship { get; protected set; }
+				public Int64 Id { get; private set; }
+				public DateTime Inserted { get; private set; }
+				public DateTime Updated { get; private set; }
+				public VersionedString FirstName { get; private set; }
+				public VersionedString LastName { get; private set; }
+				public VersionedDbGeography Location { get; private set; }
+				public VersionedStanding Standing { get; private set; }
+				public VersionedFriendship Friendship { get; private set; }
 	
 				public Person() {
 					this.InitializeVersionedProperties();
