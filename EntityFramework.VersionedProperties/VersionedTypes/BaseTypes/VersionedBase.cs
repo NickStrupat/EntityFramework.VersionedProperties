@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-
+using System.Linq.Expressions;
 using EntityFramework.Extensions;
 
 namespace EntityFramework.VersionedProperties {
@@ -10,20 +10,34 @@ namespace EntityFramework.VersionedProperties {
 		public Guid Id { get; private set; }
 		public DateTime Modified { get; private set; }
 		private TValue value;
+		internal virtual Boolean ValueCanBeNull { get; } = false;
 		public virtual TValue Value {
 			get { return value; }
 			set {
-				if (value == null && !(this is NullableVersionedBase<TValue, TVersion, TIVersions>))
-					throw new ArgumentNullException(nameof(value));
-				if (EqualityComparer<TValue>.Default.Equals(this.value, value))
-					return;
-				Modified = DateTime.Now;
+				if (NullCheck != null && !ValueCanBeNull)
+					NullCheck(value);
 				if (Id == Guid.Empty)
 					Id = Guid.NewGuid();
-				else
-					InternalLocalVersions.Add(new TVersion { VersionedId = Id, Added = Modified, Value = Value });
+				else {
+					if (EqualityComparer<TValue>.Default.Equals(this.value, value))
+						return;
+					AddToInternalLocalVersions();
+				}
+				Modified = DateTime.Now;
 				this.value = value;
 			}
+		}
+
+		private static readonly Func<TVersion> VersionCtor = Expression.Lambda<Func<TVersion>>(Expression.New(typeof (TVersion))).Compile(); // C# 6 and older generate Activator.CreateInstance calls for `new T()`
+
+		private static readonly Action<TValue> NullCheck = GetNullCheck();
+		private static Action<TValue> GetNullCheck() {
+			if (typeof(TValue).IsValueType)
+				return null;
+			return value => {
+				if (value == null)
+					throw new ArgumentNullException(nameof(value));
+			};
 		}
 
 		public override String ToString() => Value.ToString();
@@ -32,13 +46,20 @@ namespace EntityFramework.VersionedProperties {
 
 		protected VersionedBase() {
 			Modified = DateTime.Now;
-			if (DefaultValue != null)
-				value = DefaultValue;
+			value = DefaultValue;
 		}
 
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
 
-		internal readonly List<TVersion> InternalLocalVersions = new List<TVersion>();
+		private readonly List<TVersion> InternalLocalVersions = new List<TVersion>();
+
+		private void AddToInternalLocalVersions() {
+			var version = VersionCtor();
+			version.VersionedId = Id;
+			version.Added = Modified;
+			version.Value = Value;
+			InternalLocalVersions.Add(version);
+		}
 
 		public IEnumerable<TVersion> LocalVersions => InternalLocalVersions;
 
