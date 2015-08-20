@@ -163,9 +163,6 @@
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedString.cs">
       <Link>VersionedTypes\VersionedString.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedVersionBase.cs">
-      <Link>VersionedVersionBase.cs</Link>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
