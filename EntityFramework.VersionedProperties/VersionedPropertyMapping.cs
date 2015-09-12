@@ -4,20 +4,23 @@ using System.Reflection;
 
 namespace EntityFramework.VersionedProperties {
 	internal class VersionedPropertyMapping {
-		public Func<IVersionedProperties, IVersioned> GetInstantiatedVersioned { get; private set; }
+		private readonly Func<IVersionedProperties, IVersioned> getter;
+		private readonly Func<IVersioned> ctor;
+		private readonly Action<IVersionedProperties, IVersioned> setter;
 
 		public VersionedPropertyMapping(PropertyInfo propertyInfo) {
-			var getter = GetValueGetter(propertyInfo);
-			var ctor = GetCtor(propertyInfo.PropertyType);
-			var setter = GetValueSetter(propertyInfo);
-			GetInstantiatedVersioned = vp => {
-				var versioned = getter(vp);
-				if (versioned == null) {
-					versioned = ctor();
-					setter(vp, versioned);
-				}
-				return versioned;
-			};
+			getter = GetValueGetter(propertyInfo);
+			ctor = GetCtor(propertyInfo.PropertyType);
+			setter = GetValueSetter(propertyInfo);
+		}
+
+		public IVersioned GetInstantiatedVersioned(IVersionedProperties vp) {
+			var versioned = getter(vp);
+			if (versioned == null) {
+				versioned = ctor();
+				setter(vp, versioned);
+			}
+			return versioned;
 		}
 
 		private static Func<IVersioned> GetCtor(Type type) => Expression.Lambda<Func<IVersioned>>(Expression.New(type)).Compile();
