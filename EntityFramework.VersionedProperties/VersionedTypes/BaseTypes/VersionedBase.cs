@@ -11,11 +11,12 @@ namespace EntityFramework.VersionedProperties {
 		public DateTime Modified { get; private set; }
 		private TValue value;
 		internal virtual Boolean ValueCanBeNull { get; } = false;
+		private static Boolean TValueIsValueType = typeof(TValue).IsValueType;
 		public virtual TValue Value {
 			get { return value; }
 			set {
-				if (NullCheck != null && !ValueCanBeNull)
-					NullCheck(value);
+				if (!TValueIsValueType && !ValueCanBeNull && value == null)
+					throw new ArgumentNullException(nameof(value));
 				if (Id == Guid.Empty)
 					Id = Guid.NewGuid();
 				else {
@@ -29,17 +30,7 @@ namespace EntityFramework.VersionedProperties {
 		}
 
 		private static readonly Func<TVersion> VersionCtor = Expression.Lambda<Func<TVersion>>(Expression.New(typeof (TVersion))).Compile(); // C# 6 and older generate Activator.CreateInstance calls for `new T()`
-
-		private static readonly Action<TValue> NullCheck = GetNullCheck();
-		private static Action<TValue> GetNullCheck() {
-			if (typeof(TValue).IsValueType)
-				return null;
-			return value => {
-				if (value == null)
-					throw new ArgumentNullException(nameof(value));
-			};
-		}
-
+		
 		public override String ToString() => Value.ToString();
 
 		protected virtual TValue DefaultValue => default(TValue);
@@ -65,21 +56,22 @@ namespace EntityFramework.VersionedProperties {
 
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 
-		void IVersioned.AddVersionsToDbContext(Object dbContext) {
+		void IVersioned.AddVersionsToDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
-			VersionDbSet((TIVersions)dbContext).AddRange(InternalLocalVersions);
+			VersionDbSet((TIVersions)(Object)dbContext).AddRange(InternalLocalVersions);
 			InternalLocalVersions.Clear();
 		}
 
-		void IVersioned.RemoveVersionsFromDbContext(Object dbContext) {
+		void IVersioned.RemoveVersionsFromDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
-			VersionDbSet((TIVersions)dbContext).Where(x => x.VersionedId == Id).Delete();
+			VersionDbSet((TIVersions)(Object)dbContext).Where(x => x.VersionedId == Id).Delete();
 			InternalLocalVersions.Clear();
 		}
 
-		private static void CheckDbContext(Object dbContext) {
-			if (!(dbContext is TIVersions))
-				throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).Name);
+		private static void CheckDbContext(DbContext dbContext) {
+			if (dbContext is TIVersions)
+				return;
+			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).Name);
 		}
 	}
 }

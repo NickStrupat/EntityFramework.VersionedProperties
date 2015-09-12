@@ -1,8 +1,8 @@
-﻿using System;
+﻿using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	internal interface IVersioned {
-		void AddVersionsToDbContext(Object dbContext);
-		void RemoveVersionsFromDbContext(Object dbContext);
+		void AddVersionsToDbContext(DbContext dbContext);
+		void RemoveVersionsFromDbContext(DbContext dbContext);
 	}
 }
