@@ -11,7 +11,7 @@ namespace EntityFramework.VersionedProperties {
 		public DateTime Modified { get; private set; }
 		private TValue value;
 		internal virtual Boolean ValueCanBeNull { get; } = false;
-		private static Boolean TValueIsValueType = typeof(TValue).IsValueType;
+		private static readonly Boolean TValueIsValueType = typeof(TValue).IsValueType;
 		public virtual TValue Value {
 			get { return value; }
 			set {
@@ -42,30 +42,30 @@ namespace EntityFramework.VersionedProperties {
 
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
 
-		private readonly List<TVersion> InternalLocalVersions = new List<TVersion>();
+		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
 
 		private void AddToInternalLocalVersions() {
 			var version = VersionCtor();
 			version.VersionedId = Id;
 			version.Added = Modified;
 			version.Value = Value;
-			InternalLocalVersions.Add(version);
+			internalLocalVersions.Add(version);
 		}
 
-		public IEnumerable<TVersion> LocalVersions => InternalLocalVersions;
+		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
 
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 
 		void IVersioned.AddVersionsToDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
-			VersionDbSet((TIVersions)(Object)dbContext).AddRange(InternalLocalVersions);
-			InternalLocalVersions.Clear();
+			VersionDbSet((TIVersions)(Object)dbContext).AddRange(internalLocalVersions);
+			internalLocalVersions.Clear();
 		}
 
 		void IVersioned.RemoveVersionsFromDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
 			VersionDbSet((TIVersions)(Object)dbContext).Where(x => x.VersionedId == Id).Delete();
-			InternalLocalVersions.Clear();
+			internalLocalVersions.Clear();
 		}
 
 		private static void CheckDbContext(DbContext dbContext) {
