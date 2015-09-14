@@ -50,6 +50,10 @@
       <HintPath>..\packages\EntityFramework.Triggers.5.3.0-prerelease\lib\net40\EntityFramework.Triggers.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="New.Instance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\New.Instance.0.1.0\lib\net40-client\New.Instance.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -90,6 +94,9 @@
     </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\IVersioned.cs">
       <Link>VersionedTypes\BaseTypes\IVersioned.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableValueVersionedBase.cs">
+      <Link>VersionedTypes\BaseTypes\NullableValueVersionedBase.cs</Link>
     </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableVersionedBase.cs">
       <Link>VersionedTypes\BaseTypes\NullableVersionedBase.cs</Link>

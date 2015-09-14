@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedNullableDecimal : NullableVersionedBase<Decimal?, NullableDecimalVersion, INullableDecimalVersions> {
+	public class VersionedNullableDecimal : NullableValueVersionedBase<Decimal?, NullableDecimalVersion, INullableDecimalVersions> {
 		protected override Func<INullableDecimalVersions, DbSet<NullableDecimalVersion>> VersionDbSet => x => x.NullableDecimalVersions;
 	}
 }

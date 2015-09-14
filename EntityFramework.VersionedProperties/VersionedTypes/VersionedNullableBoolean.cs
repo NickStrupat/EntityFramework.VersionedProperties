@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedNullableBoolean : NullableVersionedBase<Boolean?, NullableBooleanVersion, INullableBooleanVersions> {
+	public class VersionedNullableBoolean : NullableValueVersionedBase<Boolean?, NullableBooleanVersion, INullableBooleanVersions> {
 		protected override Func<INullableBooleanVersions, DbSet<NullableBooleanVersion>> VersionDbSet => x => x.NullableBooleanVersions;
 	}
 }

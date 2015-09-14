@@ -4,7 +4,7 @@ using System.Data.Entity;
 
 namespace EntityFramework.VersionedProperties {
 	[ComplexType]
-	public class VersionedNullableString : NullableVersionedBase<String, NullableStringVersion, INullableStringVersions> {
+	public class VersionedNullableString : NullableValueVersionedBase<String, NullableStringVersion, INullableStringVersions> {
 		protected override Func<INullableStringVersions, DbSet<NullableStringVersion>> VersionDbSet => x => x.NullableStringVersions;
 	}
 }

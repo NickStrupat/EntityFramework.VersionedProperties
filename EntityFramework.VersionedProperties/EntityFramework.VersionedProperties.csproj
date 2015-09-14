@@ -52,6 +52,10 @@
       <HintPath>..\packages\EntityFramework.Triggers.5.3.0-prerelease\lib\net45\EntityFramework.Triggers.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="New.Instance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\New.Instance.0.1.0\lib\net40-client\New.Instance.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -61,6 +65,7 @@
     <Compile Include="IVersionedProperties.cs" />
     <Compile Include="IDbContextWithVersionedProperties.cs" />
     <Compile Include="StaticCache.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\NullableVersionedBase.cs" />
     <Compile Include="VersionedTypes\BaseTypes\VersionedBase.cs" />
     <Compile Include="VersionedTypes\VersionedBoolean.cs" />
     <Compile Include="VersionedTypes\VersionedDateTime.cs" />
@@ -84,7 +89,7 @@
     <Compile Include="VersionedTypes\VersionedNullableInt64.cs" />
     <Compile Include="VersionedTypes\VersionedNullableString.cs" />
     <Compile Include="VersionedTypes\VersionedString.cs" />
-    <Compile Include="VersionedTypes\BaseTypes\NullableVersionedBase.cs" />
+    <Compile Include="VersionedTypes\BaseTypes\NullableValueVersionedBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbContextWithVersionedProperties.cs" />
     <Compile Include="VersionedTypes\BaseTypes\RequiredValueVersionedBase.cs" />

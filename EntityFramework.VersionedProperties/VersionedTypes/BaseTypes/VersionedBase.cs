@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using EntityFramework.Extensions;
+using New.Instance;
 
 namespace EntityFramework.VersionedProperties {
 	public abstract class VersionedBase<TValue, TVersion, TIVersions> : IVersioned where TVersion : VersionBase<TValue>, new() {
@@ -28,12 +29,10 @@ namespace EntityFramework.VersionedProperties {
 				this.value = value;
 			}
 		}
-
-		private static readonly Func<TVersion> VersionCtor = Expression.Lambda<Func<TVersion>>(Expression.New(typeof (TVersion))).Compile(); // C# 6 and older generate Activator.CreateInstance calls for `new T()`
 		
-		public override String ToString() => Value.ToString();
+		public override String ToString() => Value == null ? String.Empty : Value.ToString();
 
-		protected virtual TValue DefaultValue => default(TValue);
+		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : New<TValue>.Instance();
 
 		protected VersionedBase() {
 			Modified = DateTime.Now;
@@ -45,7 +44,7 @@ namespace EntityFramework.VersionedProperties {
 		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
 
 		private void AddToInternalLocalVersions() {
-			var version = VersionCtor();
+			var version = New<TVersion>.Instance();
 			version.VersionedId = Id;
 			version.Added = Modified;
 			version.Value = Value;
