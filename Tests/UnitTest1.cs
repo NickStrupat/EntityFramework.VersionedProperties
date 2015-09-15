@@ -44,6 +44,7 @@ namespace EntityFramework.VersionedProperties.Tests {
 
 				var person = new Person { FirstName = { Value = "Nick" }, LastName = { Value = "Strupat" } };
 				person.FirstName.Value = "Nicholas";
+				Assert.IsTrue(person.FirstName.LocalVersions.Single().Value == "Nick");
 				//person.Location = DbGeometry.FromText("POINT(53.095124 -0.864716)");
 				context.People.Add(person);
 				//person.FirstName.Value = String.Empty;
