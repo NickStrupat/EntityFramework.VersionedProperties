@@ -15,6 +15,9 @@ namespace EntityFramework.VersionedProperties {
 		internal virtual Boolean ValueCanBeNull { get; } = false;
 		private static readonly Boolean TValueIsValueType = typeof(TValue).IsValueType;
 
+		internal Boolean isDefaultValue;
+		void IVersioned.SetIsDefaultValueFalse() => isDefaultValue = false;
+
 		public virtual TValue Value {
 			get { return value; }
 			set {
@@ -39,7 +42,6 @@ namespace EntityFramework.VersionedProperties {
 
 		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : New<TValue>.Instance();
 
-		private Boolean isDefaultValue;
 		protected VersionedBase() {
 			Modified = DateTime.Now;
 			value = DefaultValue;

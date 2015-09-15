@@ -18,12 +18,18 @@ namespace EntityFramework.VersionedProperties {
 		static StaticCache() {
 			Triggers<TVersionedProperties>.Inserting += OnInsertingOrUpdating;
 			Triggers<TVersionedProperties>.Updating += OnInsertingOrUpdating;
+			Triggers<TVersionedProperties>.Inserted += OnInserted;
 			Triggers<TVersionedProperties>.Deleted += OnDeleted;
 		}
 
 		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyMappings)
 				versionedPropertyMapping.GetInstantiatedVersioned(entry.Entity).AddVersionsToDbContext(entry.Context);
+		}
+
+		private static void OnInserted(IEntry<TVersionedProperties> entry) {
+			foreach (var versionedPropertyMapping in versionedPropertyMappings)
+				versionedPropertyMapping.GetInstantiatedVersioned(entry.Entity).SetIsDefaultValueFalse();
 		}
 
 		private static void OnDeleted(IEntry<TVersionedProperties> entry) {
