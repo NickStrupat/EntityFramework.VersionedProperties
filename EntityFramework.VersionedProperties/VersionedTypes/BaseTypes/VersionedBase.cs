@@ -11,18 +11,23 @@ namespace EntityFramework.VersionedProperties {
 		public Guid Id { get; private set; }
 		public DateTime Modified { get; private set; }
 		private TValue value;
+
 		internal virtual Boolean ValueCanBeNull { get; } = false;
 		private static readonly Boolean TValueIsValueType = typeof(TValue).IsValueType;
+
 		public virtual TValue Value {
 			get { return value; }
 			set {
 				if (!TValueIsValueType && !ValueCanBeNull && value == null)
-					throw new ArgumentNullException(nameof(value));
-				if (Id == Guid.Empty)
-					Id = Guid.NewGuid();
+					throw new ArgumentNullException(nameof(value), "Value cannot be assigned null when ValueCanBeNull is false");
+
+				if (isDefaultValue)
+					isDefaultValue = false;
 				else {
 					if (EqualityComparer<TValue>.Default.Equals(this.value, value))
 						return;
+					if (Id == Guid.Empty)
+						Id = Guid.NewGuid();
 					AddToInternalLocalVersions();
 				}
 				Modified = DateTime.Now;
@@ -34,12 +39,20 @@ namespace EntityFramework.VersionedProperties {
 
 		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : New<TValue>.Instance();
 
+		private Boolean isDefaultValue;
 		protected VersionedBase() {
 			Modified = DateTime.Now;
 			value = DefaultValue;
+			isDefaultValue = true;
 		}
 
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
+
+		//private IQueryable<TVersion> GetVersions(TIVersions dbContext) {
+		//	if (isDefaultValue || Id == Guid.Empty)
+		//		return (IDbSet<TVersion>)Enumerable.Empty<TVersion>().AsQueryable();
+		//	return VersionDbSet(dbContext);
+		//}
 
 		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
 
