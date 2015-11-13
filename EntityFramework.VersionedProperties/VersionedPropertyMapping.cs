@@ -41,11 +41,11 @@ namespace EntityFramework.VersionedProperties {
 
 		private static Func<IVersionedProperties, IVersioned> GetValueGetter(PropertyInfo propertyInfo) {
 			var instance = Expression.Parameter(typeof(IVersionedProperties));
-			var setterCall = Expression.Call(
+			var call = Expression.Call(
 				Expression.Convert(instance, propertyInfo.DeclaringType),
 				propertyInfo.GetGetMethod()
 				);
-			return Expression.Lambda<Func<IVersionedProperties, IVersioned>>(setterCall, instance).Compile();
+			return Expression.Lambda<Func<IVersionedProperties, IVersioned>>(call, instance).Compile();
 		}
 	}
 }
