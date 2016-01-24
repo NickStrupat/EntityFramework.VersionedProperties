@@ -1,6 +1,8 @@
 EntityFramework.VersionedProperties
 ==================================
 
+NuGet package listed on nuget.org at https://www.nuget.org/packages/EntityFramework.VersionedProperties/ [![NuGet Status](http://img.shields.io/nuget/v/EntityFramework.VersionedProperties.svg?style=flat)](https://www.nuget.org/packages/EntityFramework.VersionedProperties/)
+
 VersionedProperties is a library for .NET developers using Entity Framework which makes it very easy to support fine-grained (down to the property) data versioning. Triggers are inherently supported as this project depends on some of the underlying features of https://github.com/NickStrupat/EntityFramework.Triggers.
 
 Versioned property types are included for most primitive types which are mappable by Entity Framework. Extending the set to support your own custom types is demonstrated in the usage example below.
