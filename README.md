@@ -44,6 +44,7 @@ When accessing your versioned property, the `Value` property represents the curr
 
 #### Basic
 
+```csharp
 	public class Person : IVersionedProperties {
 		public Int64 Id { get; private set; }
 		public String Name { get; set; }
@@ -65,9 +66,11 @@ When accessing your versioned property, the `Value` property represents the curr
 	context.SaveChanges();
 	
 	// At this point, `People` contains one row with the most recent check-in value, and `VersionedStrings` contains one row with the previous check-in time.
+```
 
 #### Extended
 	
+```csharp
 	using System;
 	using System.ComponentModel.DataAnnotations.Schema;
 	using System.Data.Entity;
@@ -170,3 +173,4 @@ When accessing your versioned property, the `Value` property represents the curr
 			}
 		}
 	}
+```
