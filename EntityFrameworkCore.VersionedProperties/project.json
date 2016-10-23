@@ -1,0 +1,29 @@
+﻿{
+	"version": "1.0.0-*",
+
+	"configurations": {
+		"Debug": {
+			"buildOptions": {
+				"define": [ "DEBUG", "TRACE", "EF_CORE" ]
+			}
+		},
+		"Release": {
+			"buildOptions": {
+				"define": [ "RELEASE", "TRACE", "EF_CORE" ],
+				"optimize": true
+			}
+		}
+	},
+
+	"dependencies": {
+		"EntityFrameworkCore.Triggers": "1.0.0",
+		"Z.EntityFramework.Plus.EFCore": "1.4.9"
+	},
+
+	"frameworks": {
+		"net451": {},
+		"netstandard1.3": {
+			"imports": "dnxcore50"
+		}
+	}
+}
