@@ -19,8 +19,7 @@ namespace EntityFramework.VersionedProperties {
 
 		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
 
-		internal virtual Boolean ValueCanBeNull { get; } = false;
-
+		internal virtual Boolean ValueCanBeNull => false;
 		internal Boolean isDefaultValue;
 		
 		private TValue value;
@@ -28,7 +27,7 @@ namespace EntityFramework.VersionedProperties {
 			get { return value; }
 			set {
 				if (!TValueIsValueType && !ValueCanBeNull && value == null)
-					throw new ArgumentNullException(nameof(value), $"{nameof(Value)} cannot be assigned null when ${nameof(ValueCanBeNull)} is false");
+					throw new ArgumentNullException(nameof(value), $"{nameof(Value)} cannot be assigned null on this type");
 
 				if (isDefaultValue)
 					isDefaultValue = false;
