@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 #if EF_CORE
@@ -10,8 +10,7 @@ using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public sealed class VersionedString : RequiredValueVersionedBase<String, StringVersion, IStringVersions> {
-		protected override String DefaultValue => String.Empty;
-		protected override Func<IStringVersions, DbSet<StringVersion>> VersionDbSet => x => x.StringVersions;
+	public sealed class VersionedString : VersionedBase<String, NullableStringVersion, INullableStringVersions> {
+		protected override Func<INullableStringVersions, DbSet<NullableStringVersion>> VersionDbSet => x => x.NullableStringVersions;
 	}
 }

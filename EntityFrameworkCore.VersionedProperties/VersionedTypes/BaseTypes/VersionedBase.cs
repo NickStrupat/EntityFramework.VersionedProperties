@@ -56,7 +56,7 @@ namespace EntityFramework.VersionedProperties {
 		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : Activator.CreateInstance<TValue>();
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
 		
-		public override String ToString() => Value == null ? String.Empty : Value.ToString();
+		public override System.String ToString() => Value == null ? System.String.Empty : Value.ToString();
 		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 

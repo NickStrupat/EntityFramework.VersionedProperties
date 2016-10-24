@@ -11,9 +11,8 @@ namespace EntityFramework.VersionedProperties {
 #endif
 #if !EF_CORE
 	[ComplexType]
-	public sealed class VersionedDbGeography : RequiredValueVersionedBase<DbGeography, DbGeographyVersion, IDbGeographyVersions> {
-		protected override DbGeography DefaultValue => DbGeography.FromText("POINT EMPTY");
-	    protected override Func<IDbGeographyVersions, DbSet<DbGeographyVersion>> VersionDbSet => x => x.DbGeographyVersions;
+	public sealed class VersionedDbGeography : VersionedBase<DbGeography, NullableDbGeographyVersion, INullableDbGeographyVersions> {
+		protected override Func<INullableDbGeographyVersions, DbSet<NullableDbGeographyVersion>> VersionDbSet => x => x.NullableDbGeographyVersions;
 	}
 #endif
 }
