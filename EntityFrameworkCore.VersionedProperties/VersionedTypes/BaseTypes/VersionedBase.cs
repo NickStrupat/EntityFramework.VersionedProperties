@@ -79,7 +79,7 @@ namespace EntityFramework.VersionedProperties {
 			internalLocalVersions.Clear();
 		}
 
-		void IVersioned.ClearLocalVersions() => internalLocalVersions.Clear();
+		void IVersioned.ClearInternalLocalVersions() => internalLocalVersions.Clear();
 
 		private static void CheckDbContext(DbContext dbContext) {
 			if (dbContext is TIVersions)

@@ -8,7 +8,7 @@ namespace EntityFramework.VersionedProperties {
 	internal interface IVersioned {
 		void AddVersionsToDbContext(DbContext dbContext);
 		void RemoveVersionsFromDbContext(DbContext dbContext);
-		void ClearLocalVersions();
+		void ClearInternalLocalVersions();
 		void SetIsDefaultValueFalse();
 	}
 }

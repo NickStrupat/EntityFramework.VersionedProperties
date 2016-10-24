@@ -47,7 +47,7 @@ namespace EntityFramework.VersionedProperties {
 
 		private static void OnInsertedOrUpdated(IAfterEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).ClearLocalVersions();
+				versionedPropertyMapping(entry.Entity).ClearInternalLocalVersions();
 		}
 
 		private static void OnInserted(IEntry<TVersionedProperties, TDbContext> entry) {
