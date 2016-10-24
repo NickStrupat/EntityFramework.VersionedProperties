@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using System.Reflection;
 
 using EntityFramework.Triggers;
 
 namespace EntityFramework.VersionedProperties {
-	internal static class StaticCache<TVersionedProperties> where TVersionedProperties : class, IVersionedProperties, ITriggerable {
+	internal static class StaticCache<TVersionedProperties> where TVersionedProperties : class, IVersionedProperties {
 		public static void Initialize(IVersionedProperties versionedProperties) {
 			foreach (var versionedPropertyMapping in versionedPropertyMappings)
 				versionedPropertyMapping.GetInstantiatedVersioned(versionedProperties);
@@ -22,17 +23,17 @@ namespace EntityFramework.VersionedProperties {
 			Triggers<TVersionedProperties>.Deleted += OnDeleted;
 		}
 
-		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties> entry) {
+		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties, DbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyMappings)
 				versionedPropertyMapping.GetInstantiatedVersioned(entry.Entity).AddVersionsToDbContext(entry.Context);
 		}
 
-		private static void OnInserted(IEntry<TVersionedProperties> entry) {
+		private static void OnInserted(IEntry<TVersionedProperties, DbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyMappings)
 				versionedPropertyMapping.GetInstantiatedVersioned(entry.Entity).SetIsDefaultValueFalse();
 		}
 
-		private static void OnDeleted(IEntry<TVersionedProperties> entry) {
+		private static void OnDeleted(IEntry<TVersionedProperties, DbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyMappings)
 				versionedPropertyMapping.GetInstantiatedVersioned(entry.Entity).RemoveVersionsFromDbContext(entry.Context);
 		}
