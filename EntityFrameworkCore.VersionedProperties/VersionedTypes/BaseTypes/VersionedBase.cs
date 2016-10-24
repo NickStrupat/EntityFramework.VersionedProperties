@@ -12,21 +12,23 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	public abstract class VersionedBase<TValue, TVersion, TIVersions> : IVersioned where TVersion : VersionBase<TValue>, new() {
-		public Guid Id { get; private set; }
-		public DateTime Modified { get; private set; }
-		private TValue value;
-
-		internal virtual Boolean ValueCanBeNull { get; } = false;
 		private static readonly Boolean TValueIsValueType = typeof(TValue).GetTypeInfo().IsValueType;
 
-		internal Boolean isDefaultValue;
-		void IVersioned.SetIsDefaultValueFalse() => isDefaultValue = false;
+		public Guid Id { get; private set; }
+		public DateTime Modified { get; private set; }
 
+		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
+
+		internal virtual Boolean ValueCanBeNull { get; } = false;
+
+		internal Boolean isDefaultValue;
+		
+		private TValue value;
 		public virtual TValue Value {
 			get { return value; }
 			set {
 				if (!TValueIsValueType && !ValueCanBeNull && value == null)
-					throw new ArgumentNullException(nameof(value), "Value cannot be assigned null when ValueCanBeNull is false");
+					throw new ArgumentNullException(nameof(value), $"{nameof(Value)} cannot be assigned null when ${nameof(ValueCanBeNull)} is false");
 
 				if (isDefaultValue)
 					isDefaultValue = false;
@@ -35,16 +37,16 @@ namespace EntityFramework.VersionedProperties {
 						return;
 					if (Id == Guid.Empty)
 						Id = Guid.NewGuid();
-					AddToInternalLocalVersions();
+					internalLocalVersions.Add(new TVersion {
+						VersionedId = Id,
+						Added = Modified,
+						Value = Value
+					});
 				}
 				Modified = DateTime.Now;
 				this.value = value;
 			}
 		}
-		
-		public override String ToString() => Value == null ? String.Empty : Value.ToString();
-
-		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : Activator.CreateInstance<TValue>();
 
 		protected VersionedBase() {
 			Modified = DateTime.Now;
@@ -52,22 +54,14 @@ namespace EntityFramework.VersionedProperties {
 			isDefaultValue = true;
 		}
 
+		protected virtual TValue DefaultValue => TValueIsValueType || ValueCanBeNull ? default(TValue) : Activator.CreateInstance<TValue>();
 		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
-
-		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
-
-		private void AddToInternalLocalVersions() {
-			var version = Activator.CreateInstance<TVersion>();
-			version.VersionedId = Id;
-			version.Added = Modified;
-			version.Value = Value;
-			internalLocalVersions.Add(version);
-		}
-
+		
+		public override String ToString() => Value == null ? String.Empty : Value.ToString();
 		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
-
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 
+		#region IVersioned implementations
 		void IVersioned.AddVersionsToDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
 			VersionDbSet((TIVersions)(Object)dbContext).AddRange(internalLocalVersions);
@@ -79,12 +73,14 @@ namespace EntityFramework.VersionedProperties {
 			internalLocalVersions.Clear();
 		}
 
-		void IVersioned.ClearInternalLocalVersions() => internalLocalVersions.Clear();
-
 		private static void CheckDbContext(DbContext dbContext) {
 			if (dbContext is TIVersions)
 				return;
 			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).Name);
 		}
+
+		void IVersioned.SetIsDefaultValueFalse() => isDefaultValue = false;
+		void IVersioned.ClearInternalLocalVersions() => internalLocalVersions.Clear();
+		#endregion
 	}
 }
