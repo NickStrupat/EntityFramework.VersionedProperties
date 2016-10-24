@@ -16,6 +16,7 @@ namespace EntityFramework.VersionedProperties {
 	/// versioned properties functionality.
 	/// </summary>
 	public abstract class DbContextWithVersionedProperties : DbContextWithTriggers, IDbContextWithVersionedProperties {
+#if EF_CORE
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
 			base.OnModelCreating(modelBuilder);
 			foreach (var versionType in this.GetType()
@@ -27,6 +28,7 @@ namespace EntityFramework.VersionedProperties {
 			                                .Distinct())
 			modelBuilder.Entity(versionType).HasIndex(nameof(VersionBase<Object>.Value));
 		}
+#endif
 
 		public DbSet<BooleanVersion               > BooleanVersions                { get; set; }
 		public DbSet<DateTimeVersion              > DateTimeVersions               { get; set; }
