@@ -71,7 +71,6 @@ namespace EntityFramework.VersionedProperties {
 		void IVersioned.AddVersionsToDbContext(DbContext dbContext) {
 			CheckDbContext(dbContext);
 			VersionDbSet((TIVersions)(Object)dbContext).AddRange(internalLocalVersions);
-			internalLocalVersions.Clear();
 		}
 
 		void IVersioned.RemoveVersionsFromDbContext(DbContext dbContext) {
@@ -79,6 +78,8 @@ namespace EntityFramework.VersionedProperties {
 			VersionDbSet((TIVersions)(Object)dbContext).Where(x => x.VersionedId == Id).Delete();
 			internalLocalVersions.Clear();
 		}
+
+		void IVersioned.ClearLocalVersions() => internalLocalVersions.Clear();
 
 		private static void CheckDbContext(DbContext dbContext) {
 			if (dbContext is TIVersions)

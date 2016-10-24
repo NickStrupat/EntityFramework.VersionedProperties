@@ -27,6 +27,8 @@ namespace EntityFramework.VersionedProperties {
 					return;
 				Triggers<TVersionedProperties, TDbContext>.Inserting += OnInsertingOrUpdating;
 				Triggers<TVersionedProperties, TDbContext>.Updating += OnInsertingOrUpdating;
+				Triggers<TVersionedProperties, TDbContext>.Inserted += OnInsertedOrUpdated;
+				Triggers<TVersionedProperties, TDbContext>.Updated += OnInsertedOrUpdated;
 				Triggers<TVersionedProperties, TDbContext>.Inserted += OnInserted;
 				Triggers<TVersionedProperties, TDbContext>.Deleted += OnDeleted;
 				initialized = true;
@@ -41,6 +43,11 @@ namespace EntityFramework.VersionedProperties {
 		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
 				versionedPropertyMapping(entry.Entity).AddVersionsToDbContext(entry.Context);
+		}
+
+		private static void OnInsertedOrUpdated(IAfterEntry<TVersionedProperties, TDbContext> entry) {
+			foreach (var versionedPropertyMapping in versionedPropertyGetters)
+				versionedPropertyMapping(entry.Entity).ClearLocalVersions();
 		}
 
 		private static void OnInserted(IEntry<TVersionedProperties, TDbContext> entry) {

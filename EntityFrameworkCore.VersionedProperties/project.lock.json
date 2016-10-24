@@ -3,7 +3,7 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.5.1": {
-      "EntityFrameworkCore.Triggers/1.0.0": {
+      "EntityFrameworkCore.Triggers/1.0.1": {
         "type": "package",
         "dependencies": {
           "EntityFrameworkCore.TypedOriginalValues": "1.0.1",
@@ -458,7 +458,7 @@
       }
     },
     ".NETStandard,Version=v1.3": {
-      "EntityFrameworkCore.Triggers/1.0.0": {
+      "EntityFrameworkCore.Triggers/1.0.1": {
         "type": "package",
         "dependencies": {
           "EntityFrameworkCore.TypedOriginalValues": "1.0.1",
@@ -1085,12 +1085,12 @@
     }
   },
   "libraries": {
-    "EntityFrameworkCore.Triggers/1.0.0": {
-      "sha512": "oqns6dMBV6Ko0kCI/omw2xbyfsf6xWojs+OJDdazspxQeUcoxy/Jv34ThgKyA4oARg/Ey/rzPFMvf55z7O7yYQ==",
+    "EntityFrameworkCore.Triggers/1.0.1": {
+      "sha512": "X74hI/tNyvrrc8jvmpBiaVu1C3Hfxsl8MZgWjkxzCvduaswg98QAekhS3vnA7s857HLiv5FNvd4vUSF/NOKi2w==",
       "type": "package",
-      "path": "EntityFrameworkCore.Triggers/1.0.0",
+      "path": "EntityFrameworkCore.Triggers/1.0.1",
       "files": [
-        "EntityFrameworkCore.Triggers.1.0.0.nupkg.sha512",
+        "EntityFrameworkCore.Triggers.1.0.1.nupkg.sha512",
         "EntityFrameworkCore.Triggers.nuspec",
         "lib/net451/EntityFrameworkCore.Triggers.dll",
         "lib/netstandard1.3/EntityFrameworkCore.Triggers.dll"
@@ -3021,7 +3021,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "EntityFrameworkCore.Triggers >= 1.0.0",
+      "EntityFrameworkCore.Triggers >= 1.0.1",
       "Z.EntityFramework.Plus.EFCore >= 1.4.9"
     ],
     ".NETFramework,Version=v4.5.1": [],
