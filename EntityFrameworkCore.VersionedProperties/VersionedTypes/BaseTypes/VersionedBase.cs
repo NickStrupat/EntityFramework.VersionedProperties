@@ -42,13 +42,13 @@ namespace EntityFramework.VersionedProperties {
 						Value = Value
 					});
 				}
-				Modified = DateTime.Now;
+				Modified = DateTime.UtcNow;
 				this.value = value;
 			}
 		}
 
 		protected VersionedBase() {
-			Modified = DateTime.Now;
+			Modified = DateTime.UtcNow;
 			value = DefaultValue;
 			isDefaultValue = true;
 		}
