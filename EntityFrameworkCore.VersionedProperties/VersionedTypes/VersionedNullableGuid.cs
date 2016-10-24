@@ -10,7 +10,7 @@ using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public class VersionedNullableGuid : NullableValueVersionedBase<Guid?, NullableGuidVersion, INullableGuidVersions> {
+	public sealed class VersionedNullableGuid : NullableValueVersionedBase<Guid?, NullableGuidVersion, INullableGuidVersions> {
 		protected override Func<INullableGuidVersions, DbSet<NullableGuidVersion>> VersionDbSet => x => x.NullableGuidVersions;
 	}
 }

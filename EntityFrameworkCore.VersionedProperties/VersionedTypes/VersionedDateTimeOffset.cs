@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public class VersionedDateTimeOffset : VersionedBase<DateTimeOffset, DateTimeOffsetVersion, IDateTimeOffsetVersions> {
+	public sealed class VersionedDateTimeOffset : VersionedBase<DateTimeOffset, DateTimeOffsetVersion, IDateTimeOffsetVersions> {
 		protected override Func<IDateTimeOffsetVersions, DbSet<DateTimeOffsetVersion>> VersionDbSet => x => x.DateTimeOffsetVersions;
 	}
 }

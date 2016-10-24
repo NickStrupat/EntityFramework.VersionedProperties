@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public class VersionedDecimal : VersionedBase<Decimal, DecimalVersion, IDecimalVersions> {
+	public sealed class VersionedDecimal : VersionedBase<Decimal, DecimalVersion, IDecimalVersions> {
 		protected override Func<IDecimalVersions, DbSet<DecimalVersion>> VersionDbSet => x => x.DecimalVersions;
 	}
 }

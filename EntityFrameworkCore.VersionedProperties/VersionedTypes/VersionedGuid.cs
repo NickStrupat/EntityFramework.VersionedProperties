@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public class VersionedGuid : VersionedBase<Guid, GuidVersion, IGuidVersions> {
+	public sealed class VersionedGuid : VersionedBase<Guid, GuidVersion, IGuidVersions> {
 		protected override Func<IGuidVersions, DbSet<GuidVersion>> VersionDbSet => x => x.GuidVersions;
 	}
 }

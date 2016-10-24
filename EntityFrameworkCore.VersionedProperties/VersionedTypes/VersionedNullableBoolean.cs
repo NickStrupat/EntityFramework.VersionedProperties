@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public class VersionedNullableBoolean : NullableValueVersionedBase<Boolean?, NullableBooleanVersion, INullableBooleanVersions> {
+	public sealed class VersionedNullableBoolean : NullableValueVersionedBase<Boolean?, NullableBooleanVersion, INullableBooleanVersions> {
 		protected override Func<INullableBooleanVersions, DbSet<NullableBooleanVersion>> VersionDbSet => x => x.NullableBooleanVersions;
 	}
 }

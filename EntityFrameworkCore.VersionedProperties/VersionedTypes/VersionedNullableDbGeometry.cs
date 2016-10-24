@@ -11,7 +11,7 @@ namespace EntityFramework.VersionedProperties {
 #endif
 #if !EF_CORE
 	[ComplexType]
-	public class VersionedNullableDbGeometry : NullableValueVersionedBase<DbGeometry, NullableDbGeometryVersion, INullableDbGeometryVersions> {
+	public sealed class VersionedNullableDbGeometry : NullableValueVersionedBase<DbGeometry, NullableDbGeometryVersion, INullableDbGeometryVersions> {
 		protected override Func<INullableDbGeometryVersions, DbSet<NullableDbGeometryVersion>> VersionDbSet => x => x.NullableDbGeometryVersions;
 	}
 #endif

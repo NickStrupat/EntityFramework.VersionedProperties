@@ -10,7 +10,7 @@ namespace EntityFramework.VersionedProperties {
 #endif
 #if !EF_CORE
 	[ComplexType]
-	public class VersionedNullableDbGeography : NullableValueVersionedBase<DbGeography, NullableDbGeographyVersion, INullableDbGeographyVersions> {
+	public sealed class VersionedNullableDbGeography : NullableValueVersionedBase<DbGeography, NullableDbGeographyVersion, INullableDbGeographyVersions> {
 		protected override Func<INullableDbGeographyVersions, DbSet<NullableDbGeographyVersion>> VersionDbSet => x => x.NullableDbGeographyVersions;
 	}
 #endif
