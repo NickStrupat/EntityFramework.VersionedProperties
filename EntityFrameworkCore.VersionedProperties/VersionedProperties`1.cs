@@ -22,6 +22,8 @@ namespace EntityFramework.VersionedProperties {
 		private static readonly Object syncRoot = new Object();
 
 		public static void Initialize() {
+			if (initialized)
+				return;
 			lock (syncRoot) {
 				if (initialized)
 					return;
