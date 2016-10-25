@@ -10,8 +10,8 @@ using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public sealed class VersionedRequiredString : VersionedRequiredValueBase<String, RequiredStringVersion, IStringVersions> {
+	public sealed class VersionedRequiredString : VersionedRequiredValueBase<String, RequiredStringVersion, IRequiredStringVersions> {
 		protected override String DefaultValue => String.Empty;
-		protected override Func<IStringVersions, DbSet<RequiredStringVersion>> VersionDbSet => x => x.StringVersions;
+		protected override Func<IRequiredStringVersions, DbSet<RequiredStringVersion>> VersionDbSet => x => x.RequiredStringVersions;
 	}
 }

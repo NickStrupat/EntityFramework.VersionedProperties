@@ -60,7 +60,7 @@ namespace EntityFramework.VersionedProperties {
 	public interface IDbGeographyVersions            { DbSet<DbGeographyVersion           > DbGeographyVersions            { get; set; } }
 	public interface IDbGeometryVersions             { DbSet<DbGeometryVersion            > DbGeometryVersions             { get; set; } }
 #endif
-	public interface IStringVersions                 { DbSet<StringVersion                > NullableStringVersions         { get; set; } }
+	public interface IStringVersions                 { DbSet<StringVersion                > StringVersions                 { get; set; } }
 #if !EF_CORE
 	public interface IRequiredDbGeographyVersions    { DbSet<RequiredDbGeographyVersion   > RequiredDbGeographyVersions    { get; set; } }
 	public interface IRequiredDbGeometryVersions     { DbSet<RequiredDbGeometryVersion    > RequiredDbGeometryVersions     { get; set; } }

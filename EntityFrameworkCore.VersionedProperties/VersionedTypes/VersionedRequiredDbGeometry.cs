@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 #if EF_CORE
@@ -11,9 +11,8 @@ namespace EntityFramework.VersionedProperties {
 #endif
 #if !EF_CORE
 	[ComplexType]
-	public sealed class VersionedRequiredDbGeometry : RequiredValueVersionedBase<DbGeometry, DbGeometryVersion, IDbGeometryVersions> {
-		protected override DbGeometry DefaultValue => DbGeometry.FromText("POINT EMPTY");
-	    protected override Func<IDbGeometryVersions, DbSet<DbGeometryVersion>> VersionDbSet => x => x.DbGeometryVersions;
+	public sealed class VersionedDbGeometry : VersionedRequiredValueBase<DbGeometry, RequiredDbGeometryVersion, IRequiredDbGeometryVersions> {
+		protected override Func<IRequiredDbGeometryVersions, DbSet<RequiredDbGeometryVersion>> VersionDbSet => x => x.RequiredDbGeometryVersions;
 	}
 #endif
 }

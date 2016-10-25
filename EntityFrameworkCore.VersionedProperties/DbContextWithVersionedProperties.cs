@@ -51,7 +51,7 @@ namespace EntityFramework.VersionedProperties {
 		public DbSet<DbGeometryVersion            > DbGeometryVersions             { get; set; }
 #endif
 
-		public DbSet<StringVersion                > NullableStringVersions         { get; set; }
+		public DbSet<StringVersion                > StringVersions                 { get; set; }
 
 #if !EF_CORE
 		public DbSet<RequiredDbGeographyVersion   > RequiredDbGeographyVersions    { get; set; }

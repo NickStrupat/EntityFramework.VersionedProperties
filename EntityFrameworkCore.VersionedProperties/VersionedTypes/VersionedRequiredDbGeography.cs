@@ -6,14 +6,12 @@ using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
-using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 #if !EF_CORE
 	[ComplexType]
-	public sealed class VersionedRequiredDbGeography : RequiredValueVersionedBase<DbGeography, DbGeographyVersion, IDbGeographyVersions> {
-		protected override DbGeography DefaultValue => DbGeography.FromText("POINT EMPTY");
-	    protected override Func<IDbGeographyVersions, DbSet<DbGeographyVersion>> VersionDbSet => x => x.DbGeographyVersions;
+	public sealed class VersionedRequiredDbGeography : VersionedRequiredValueBase<DbGeography, RequiredDbGeographyVersion, IRequiredDbGeographyVersions> {
+		protected override Func<IRequiredDbGeographyVersions, DbSet<RequiredDbGeographyVersion>> VersionDbSet => x => x.RequiredDbGeographyVersions;
 	}
 #endif
 }
