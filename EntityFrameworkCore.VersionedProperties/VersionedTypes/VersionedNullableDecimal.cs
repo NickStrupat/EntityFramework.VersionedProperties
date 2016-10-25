@@ -10,7 +10,7 @@ using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public sealed class VersionedNullableDecimal : VersionedNullableValueBase<Decimal, NullableDecimalVersion, INullableDecimalVersions> {
+	public sealed class VersionedNullableDecimal : VersionedBase<Decimal?, NullableDecimalVersion, INullableDecimalVersions> {
 		protected override Func<INullableDecimalVersions, DbSet<NullableDecimalVersion>> VersionDbSet => x => x.NullableDecimalVersions;
 	}
 }

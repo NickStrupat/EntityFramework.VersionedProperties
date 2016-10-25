@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[ComplexType]
-	public sealed class VersionedNullableDateTime : VersionedNullableValueBase<DateTime, NullableDateTimeVersion, INullableDateTimeVersions> {
+	public sealed class VersionedNullableDateTime : VersionedBase<DateTime?, NullableDateTimeVersion, INullableDateTimeVersions> {
 		protected override Func<INullableDateTimeVersions, DbSet<NullableDateTimeVersion>> VersionDbSet => x => x.NullableDateTimeVersions;
 	}
 }
