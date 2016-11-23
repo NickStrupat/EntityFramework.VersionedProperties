@@ -9,6 +9,6 @@ namespace EntityFramework.VersionedProperties {
 		void AddVersionsToDbContext(DbContext dbContext);
 		void RemoveVersionsFromDbContext(DbContext dbContext);
 		void ClearInternalLocalVersions();
-		void SetIsDefaultValueFalse();
+		void SetIsInitialValueFalse();
 	}
 }

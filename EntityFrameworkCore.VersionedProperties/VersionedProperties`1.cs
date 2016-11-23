@@ -37,7 +37,7 @@ namespace EntityFramework.VersionedProperties {
 			}
 		}
 
-		private static readonly Func<TVersionedProperties, IVersioned>[] versionedPropertyGetters = typeof(TVersionedProperties).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+		private static readonly Func<TVersionedProperties, IVersioned>[] versionedPropertyGetters = typeof(TVersionedProperties).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
 		                                                                                                                        .Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType))
 		                                                                                                                        .Select(GetPropertyGetter)
 		                                                                                                                        .ToArray();
@@ -54,7 +54,7 @@ namespace EntityFramework.VersionedProperties {
 
 		private static void OnInserted(IEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).SetIsDefaultValueFalse();
+				versionedPropertyMapping(entry.Entity).SetIsInitialValueFalse();
 		}
 
 		private static void OnDeleted(IEntry<TVersionedProperties, TDbContext> entry) {

@@ -1,4 +1,4 @@
-﻿{
+{
 	"version": "1.0.0-*",
 
 	"configurations": {
@@ -16,13 +16,19 @@
 	},
 
 	"dependencies": {
-					"EntityFrameworkCore.Triggers": "1.0.1",
-		"Z.EntityFramework.Plus.EFCore": "1.4.9"
+		"EntityFrameworkCore.Triggers": "1.0.5",
+		"Z.EntityFramework.Plus.EFCore": "1.4.10"
 	},
 
 	"frameworks": {
-		"net451": {},
+		"net451": {
+			"buildOptions": { "outputName": "EntityFrameworkCore.VersionedProperties.net451" }
+		},
 		"netstandard1.3": {
+			"buildOptions": { "outputName": "EntityFrameworkCore.VersionedProperties.netstandard1.3" },
+			"dependencies": {
+				"NETStandard.Library": "1.6.1"
+			},
 			"imports": "dnxcore50"
 		}
 	}

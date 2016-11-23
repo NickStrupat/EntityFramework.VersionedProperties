@@ -15,15 +15,15 @@ namespace EntityFramework.VersionedProperties {
 		public Guid Id { get; private set; } = Guid.Empty;
 		public DateTime Modified { get; private set; } = DateTime.UtcNow;
 
-		private Boolean isDefaultValue = true;
+		private Boolean isInitialValue = true;
 		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
 		
 		private TValue value;
 		public TValue Value {
 			get { return value; }
 			set {
-				if (isDefaultValue)
-					isDefaultValue = false;
+				if (isInitialValue)
+					isInitialValue = false;
 				else {
 					if (EqualityComparer<TValue>.Default.Equals(this.value, value))
 						return;
@@ -45,8 +45,11 @@ namespace EntityFramework.VersionedProperties {
 		}
 
 		protected virtual TValue DefaultValue => default(TValue);
-		protected abstract Func<TIVersions, DbSet<TVersion>> VersionDbSet { get; }
-		
+		protected virtual DbSet<TVersion> VersionDbSet(TIVersions x) => versionDbSet(x);
+		protected static Func<TIVersions, DbSet<TVersion>> versionDbSet = typeof(TIVersions).GetProperties()
+		                                                                                    .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
+		                                                                                    .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
+
 		public override String ToString() => Value == null ? String.Empty : Value.ToString();
 		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
 		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
@@ -69,7 +72,7 @@ namespace EntityFramework.VersionedProperties {
 			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).Name);
 		}
 
-		void IVersioned.SetIsDefaultValueFalse() => isDefaultValue = false;
+		void IVersioned.SetIsInitialValueFalse() => isInitialValue = false;
 		void IVersioned.ClearInternalLocalVersions() => internalLocalVersions.Clear();
 		#endregion
 	}
