@@ -27,7 +27,8 @@
 		"netstandard1.3": {
 			"buildOptions": { "outputName": "EntityFrameworkCore.VersionedProperties.netstandard1.3" },
 			"dependencies": {
-				"NETStandard.Library": "1.6.1"
+				"NETStandard.Library": "1.6.1",
+				"System.Reflection.TypeExtensions": "4.3.0"
 			},
 			"imports": "dnxcore50"
 		}
