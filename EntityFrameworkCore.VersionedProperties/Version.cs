@@ -2,11 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 
 #if EF_CORE
-using Microsoft.EntityFrameworkCore;
-using EntityFrameworkCore.Triggers;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
-using System.Data.Entity;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	internal interface IVersion {}
@@ -14,18 +13,18 @@ namespace EntityFramework.VersionedProperties {
 	public abstract class VersionBase<TValue> : IVersion {
 		public Int64 Id { get; internal set; }
 #if !EF_CORE
-		// TODO: check it EF Core has IndexAttribute yet
+		// TODO: check if EF Core has IndexAttribute yet
 		[Index]
 #endif
 		public Guid VersionedId { get; internal set; }
 		public DateTime Added { get; internal set; }
-		public virtual TValue Value { get; internal set; }
+		public TValue Value { get; internal set; }
 	}
 
 	public abstract class RequiredValueVersionBase<TValue> : VersionBase<TValue>
 	where TValue : class {
 		[Required]
-		public override TValue Value {
+		public new TValue Value {
 			get { return base.Value; }
 			internal set { base.Value = value; }
 		}
