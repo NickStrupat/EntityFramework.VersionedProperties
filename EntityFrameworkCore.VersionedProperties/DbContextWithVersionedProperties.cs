@@ -1,13 +1,13 @@
-﻿using System;
+﻿#if EF_CORE
+using System;
 using System.Linq;
 using System.Reflection;
-
-#if EF_CORE
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.Triggers;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
+using EntityFramework.Triggers;
 namespace EntityFramework.VersionedProperties {
 #endif
 	/// <summary>
