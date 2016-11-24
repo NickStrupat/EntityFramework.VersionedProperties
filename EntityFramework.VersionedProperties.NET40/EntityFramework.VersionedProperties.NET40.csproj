@@ -34,6 +34,10 @@
     <DocumentationFile>bin\Release\EntityFramework.VersionedProperties.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CoContra.net40, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CoContra.1.0.2\lib\net40\CoContra.net40.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -46,16 +50,16 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net40\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework.Triggers, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.Triggers.6.0.0\lib\net40\EntityFramework.Triggers.dll</HintPath>
+    <Reference Include="EntityFramework.Triggers.net40, Version=6.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.Triggers.6.0.8\lib\net40\EntityFramework.Triggers.net40.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.TypedOriginalValues, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.TypedOriginalValues.1.0.1\lib\net40\EntityFramework.TypedOriginalValues.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="New.Instance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\New.Instance.0.1.0\lib\net40-client\New.Instance.dll</HintPath>
+    <Reference Include="Rackspace.Collections.Immutable, Version=1.1.0.0, Culture=neutral, PublicKeyToken=8acff7051142f28d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rackspace.Collections.Immutable.1.1.36\lib\net40-client\Rackspace.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,116 +70,45 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.4.12.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.4.12\lib\net40\Z.EntityFramework.Plus.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\EntityFramework.VersionedProperties\DbContextWithVersionedProperties.cs">
-      <Link>DbContextWithVersionedProperties.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\Extensions.cs">
-      <Link>Extensions.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\IDbContextWithVersionedProperties.cs">
-      <Link>IDbContextWithVersionedProperties.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\IVersionedProperties.cs">
-      <Link>IVersionedProperties.cs</Link>
-    </Compile>
     <Compile Include="..\EntityFramework.VersionedProperties\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\StaticCache.cs">
-      <Link>StaticCache.cs</Link>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\DbContextWithVersionedProperties.cs">
+      <Link>DbContextWithVersionedProperties.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\Version.cs">
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\IDbContextWithVersionedProperties.cs">
+      <Link>IDbContextWithVersionedProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\IVersioned.cs">
+      <Link>IVersioned.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\ReflectionExtensions.cs">
+      <Link>ReflectionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\Version.cs">
       <Link>Version.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedPropertyMapping.cs">
-      <Link>VersionedPropertyMapping.cs</Link>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\Versioned.cs">
+      <Link>Versioned.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\IVersioned.cs">
-      <Link>VersionedTypes\BaseTypes\IVersioned.cs</Link>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedBase.cs">
+      <Link>VersionedBase.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableValueVersionedBase.cs">
-      <Link>VersionedTypes\BaseTypes\NullableValueVersionedBase.cs</Link>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedProperties`1.cs">
+      <Link>VersionedProperties`1.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\NullableVersionedBase.cs">
-      <Link>VersionedTypes\BaseTypes\NullableVersionedBase.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\RequiredValueVersionedBase.cs">
-      <Link>VersionedTypes\BaseTypes\RequiredValueVersionedBase.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\BaseTypes\VersionedBase.cs">
-      <Link>VersionedTypes\BaseTypes\VersionedBase.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedBoolean.cs">
-      <Link>VersionedTypes\VersionedBoolean.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDateTime.cs">
-      <Link>VersionedTypes\VersionedDateTime.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDateTimeOffset.cs">
-      <Link>VersionedTypes\VersionedDateTimeOffset.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDbGeography.cs">
-      <Link>VersionedTypes\VersionedDbGeography.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDbGeometry.cs">
-      <Link>VersionedTypes\VersionedDbGeometry.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDecimal.cs">
-      <Link>VersionedTypes\VersionedDecimal.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedDouble.cs">
-      <Link>VersionedTypes\VersionedDouble.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedGuid.cs">
-      <Link>VersionedTypes\VersionedGuid.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedInt32.cs">
-      <Link>VersionedTypes\VersionedInt32.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedInt64.cs">
-      <Link>VersionedTypes\VersionedInt64.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableBoolean.cs">
-      <Link>VersionedTypes\VersionedNullableBoolean.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDateTime.cs">
-      <Link>VersionedTypes\VersionedNullableDateTime.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDateTimeOffset.cs">
-      <Link>VersionedTypes\VersionedNullableDateTimeOffset.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDbGeography.cs">
-      <Link>VersionedTypes\VersionedNullableDbGeography.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDbGeometry.cs">
-      <Link>VersionedTypes\VersionedNullableDbGeometry.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDecimal.cs">
-      <Link>VersionedTypes\VersionedNullableDecimal.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableDouble.cs">
-      <Link>VersionedTypes\VersionedNullableDouble.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableGuid.cs">
-      <Link>VersionedTypes\VersionedNullableGuid.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableInt32.cs">
-      <Link>VersionedTypes\VersionedNullableInt32.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableInt64.cs">
-      <Link>VersionedTypes\VersionedNullableInt64.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedNullableString.cs">
-      <Link>VersionedTypes\VersionedNullableString.cs</Link>
-    </Compile>
-    <Compile Include="..\EntityFramework.VersionedProperties\VersionedTypes\VersionedString.cs">
-      <Link>VersionedTypes\VersionedString.cs</Link>
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedRequiredValueBase.cs">
+      <Link>VersionedRequiredValueBase.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
