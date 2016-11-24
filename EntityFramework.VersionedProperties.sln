@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.NET40", "Tests.NET40\
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EntityFrameworkCore.VersionedProperties", "EntityFrameworkCore.VersionedProperties\EntityFrameworkCore.VersionedProperties.xproj", "{9B246DF3-A4F0-4153-9541-9DF65DA37631}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestsCore", "TestsCore\TestsCore.xproj", "{8804BE50-7F85-404B-BD30-241379AA9224}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{9B246DF3-A4F0-4153-9541-9DF65DA37631}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B246DF3-A4F0-4153-9541-9DF65DA37631}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B246DF3-A4F0-4153-9541-9DF65DA37631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8804BE50-7F85-404B-BD30-241379AA9224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8804BE50-7F85-404B-BD30-241379AA9224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8804BE50-7F85-404B-BD30-241379AA9224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8804BE50-7F85-404B-BD30-241379AA9224}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
