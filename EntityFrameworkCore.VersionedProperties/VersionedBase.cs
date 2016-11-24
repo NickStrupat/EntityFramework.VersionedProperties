@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using Z.EntityFramework.Plus;
 
 #if EF_CORE
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Z.EntityFramework.Plus;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
@@ -46,9 +46,13 @@ namespace EntityFramework.VersionedProperties {
 
 		protected virtual TValue DefaultValue => default(TValue);
 		protected virtual DbSet<TVersion> VersionDbSet(TIVersions x) => versionDbSet(x);
-		protected static Func<TIVersions, DbSet<TVersion>> versionDbSet = typeof(TIVersions).GetProperties()
-		                                                                                    .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
-		                                                                                    .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
+		protected static readonly Func<TIVersions, DbSet<TVersion>> versionDbSet = typeof(TIVersions)
+#if NET40
+		                                                                                             .GetTypeInfo()
+#endif
+		                                                                                             .GetProperties()
+		                                                                                             .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
+		                                                                                             .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
 
 		public override String ToString() => Value == null ? String.Empty : Value.ToString();
 		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;

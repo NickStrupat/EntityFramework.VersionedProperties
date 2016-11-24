@@ -8,6 +8,7 @@ using EntityFrameworkCore.Triggers;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
+using EntityFramework.Triggers;
 namespace EntityFramework.VersionedProperties {
 #endif
 	public static class VersionedProperties<TVersionedProperties>

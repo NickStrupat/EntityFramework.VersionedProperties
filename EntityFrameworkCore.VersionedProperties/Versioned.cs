@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
+using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
 	#region Primitives
