@@ -1,15 +1,17 @@
 {
 	"version": "1.0.0-*",
 
+	"buildOptions": { "define" : [ "NET_CORE", "EF_CORE" ] },
+
 	"configurations": {
 		"Debug": {
 			"buildOptions": {
-				"define": [ "DEBUG", "TRACE", "EF_CORE" ]
+				"define": [ "DEBUG", "TRACE" ]
 			}
 		},
 		"Release": {
 			"buildOptions": {
-				"define": [ "RELEASE", "TRACE", "EF_CORE" ],
+				"define": [ "RELEASE", "TRACE" ],
 				"optimize": true
 			}
 		}
