@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Spatial;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Sockets;
 using EntityFramework.Triggers;
 using EntityFramework.VersionedProperties;
+using Mutuple;
 
 namespace Example {
 	class Program {
@@ -98,28 +101,84 @@ namespace Example {
 				var first = nickStrupat.FirstName.Versions.First().Added;
 				var last = nickStrupat.FirstName.Versions.Last().Added;
 				var dt = Avg(first, last);
+				Func<Context, IEnumerable<StringVersion>> fasd = dbc => dbc.StringVersions;
 				var people = context.People;
-				var a =
-					people.GroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new {person, gj1})
-						.GroupJoin(context.StringVersions, @t => @t.person.LastName.Id, sv2 => sv2.VersionedId, (@t, gj2) => new {@t, gj2})
-						.GroupJoin(context.DbGeographyVersions, @t => @t.@t.person.Location.Id, sv3 => sv3.VersionedId, (@t, gj3) => new {@t, gj3})
-						.GroupJoin(context.StandingVersions, @t => @t.@t.@t.person.Standing.Id, sv4 => sv4.VersionedId, (@t, gj4) => new {@t, gj4})
-						.GroupJoin(context.FriendshipVersions, @t => @t.@t.@t.@t.person.Friendship.Id, sv5 => sv5.VersionedId, (@t, gj5) => new {
-							Person = @t.@t.@t.@t.person,
-							FirstName = @t.@t.@t.@t.gj1.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-							LastName = @t.@t.@t.gj2.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-							Location = @t.@t.gj3.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-							Standing = @t.gj4.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-							Friendship = gj5.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt)
-						});
-				// here we need to go over the results: for each non-null version, set the current value of the corresponding vp value AND modified, and set IsReadOnly to true
-				var b = people.SelectSnapshots(context, dt);
-				var okay = a.ToArray();
+				
+				var a = from person in people
+						join sv in context.StringVersions on person.FirstName.Id equals sv.VersionedId into gj1
+						select new {
+							Person = person,
+							FirstName = gj1.OrderBy(x => x.Added).FirstOrDefault(x => x.Added >= dt)
+						};
+				//people.GroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new {person, gj1})
+				//	.GroupJoin(context.StringVersions, @t => @t.person.LastName.Id, sv2 => sv2.VersionedId, (@t, gj2) => new {@t, gj2})
+				//	.GroupJoin(context.DbGeographyVersions, @t => @t.@t.person.Location.Id, sv3 => sv3.VersionedId, (@t, gj3) => new {@t, gj3})
+				//	.GroupJoin(context.StandingVersions, @t => @t.@t.@t.person.Standing.Id, sv4 => sv4.VersionedId, (@t, gj4) => new {@t, gj4})
+				//	.GroupJoin(context.FriendshipVersions, @t => @t.@t.@t.@t.person.Friendship.Id, sv5 => sv5.VersionedId, (@t, gj5) => new {
+				//		Person = @t.@t.@t.@t.person,
+				//		FirstName = @t.@t.@t.@t.gj1.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+				//		LastName = @t.@t.@t.gj2.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+				//		Location = @t.@t.gj3.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+				//		Standing = @t.gj4.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+				//		Friendship = gj5.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt)
+				//	});
+				new Tuple<int, int, int, int, int>(1, 1, 1, 1, 1);
+				
+				var aa = people.GroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new Mutuple<Person, IEnumerable<StringVersion>> { Item1 = person, Item2 = gj1 })
+				              .GroupJoin(context.StringVersions, @t => @t.Item1.LastName.Id, sv2 => sv2.VersionedId, (@t, gj2) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = gj2 })
+				              .GroupJoin(context.DbGeographyVersions, @t => @t.Item1.Location.Id, sv3 => sv3.VersionedId, (@t, gj3) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = gj3})
+				              .GroupJoin(context.StandingVersions, @t => @t.Item1.Standing.Id, sv4 => sv4.VersionedId, (@t, gj4) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = @t.Item4, Item5 = gj4 })
+				              .GroupJoin(context.FriendshipVersions, @t => @t.Item1.Friendship.Id, sv5 => sv5.VersionedId, (@t, gj5) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>, IEnumerable<FriendshipVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = @t.Item4, Item5 = @t.Item5, Item6 = gj5 })
+							  .Select(@t => new {
+					Person     = @t.Item1,
+					FirstName  = @t.Item2.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					LastName   = @t.Item3.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					Location   = @t.Item4.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					Standing   = @t.Item5.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					Friendship = @t.Item6.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt)
+				});
+				// here we need to go over the results: for each non-null version, set the current value of the corresponding vp value AND modified, AND set IsReadOnly to true
+				var c = people.ToSnapshots(context, dt);
+				var d = people.MyGroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new {person, gj1});
+				var okay = aa.ToArray();
+
+				//var aa = from person in people
+				//		 from sv in context.StringVersions
+				//		 orderby sv.Added
+				//		 where sv.VersionedId == person.FirstName.Id
+				//		 //from sv2 in context.StringVersions
+				//		 //orderby sv2.Added
+				//		 //where sv2.VersionedId == person.LastName.Id
+				//		 //from dgv in context.DbGeographyVersions
+				//		 //orderby dgv.Added
+				//		 //where dgv.VersionedId == person.Location.Id
+				//		 select new {
+				//		     Person = person,
+				//			 FirstName = sv
+				//		 };
+
 			}
 		}
 
 		private static DateTime Avg(DateTime x, DateTime y) => new DateTime(Avg(x.Ticks, y.Ticks));
 		private static Int64 Avg(Int64 x, Int64 y) => (Int64) new [] {x ,y}.Average();
 		private static Int32 Avg(Int32 x, Int32 y) => (Int32) new [] {x ,y}.Average();
+	}
+
+	internal static class Ex {
+		public static IQueryable<TResult> MyGroupJoin<TOuter, TInner, TKey, TResult>(
+			this IQueryable<TOuter> outer,
+			IEnumerable<TInner> inner,
+			Expression<Func<TOuter, TKey>> outerKeySelector,
+			Expression<Func<TInner, TKey>> innerKeySelector,
+			Expression<Func<TOuter, IEnumerable<TInner>, TResult>> resultSelector) {
+			return outer.GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector);
+		}
+
+		//public static IQueryable<Person>
+
+		//public static Object MyGroupJoin<TEntity, TVersion>(this IQueryable<TEntity> source, IEnumerable<TVersions> versions, Func<TEntity, Object> func, Func<TVersion, Object> func1, Func<Object, Object, Object> func2) {
+		//	return null;
+		//}
 	}
 }
