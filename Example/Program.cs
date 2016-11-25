@@ -124,39 +124,42 @@ namespace Example {
 				//	});
 				new Tuple<int, int, int, int, int>(1, 1, 1, 1, 1);
 				
-				var aa = people.GroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new Mutuple<Person, IEnumerable<StringVersion>> { Item1 = person, Item2 = gj1 })
-				              .GroupJoin(context.StringVersions, @t => @t.Item1.LastName.Id, sv2 => sv2.VersionedId, (@t, gj2) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = gj2 })
-				              .GroupJoin(context.DbGeographyVersions, @t => @t.Item1.Location.Id, sv3 => sv3.VersionedId, (@t, gj3) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = gj3})
-				              .GroupJoin(context.StandingVersions, @t => @t.Item1.Standing.Id, sv4 => sv4.VersionedId, (@t, gj4) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = @t.Item4, Item5 = gj4 })
-				              .GroupJoin(context.FriendshipVersions, @t => @t.Item1.Friendship.Id, sv5 => sv5.VersionedId, (@t, gj5) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>, IEnumerable<FriendshipVersion>> { Item1 = @t.Item1, Item2 = @t.Item2, Item3 = @t.Item3, Item4 = @t.Item4, Item5 = @t.Item5, Item6 = gj5 })
-							  .Select(@t => new {
-					Person     = @t.Item1,
-					FirstName  = @t.Item2.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-					LastName   = @t.Item3.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-					Location   = @t.Item4.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-					Standing   = @t.Item5.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
-					Friendship = @t.Item6.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt)
+				var aa = people.GroupJoin(VersionedString     .GetVersionDbSetStatic(context), p => p.FirstName.Id       , v => v.VersionedId, (p, vs) => new Mutuple<Person, IEnumerable<StringVersion>> { Item1 = p, Item2 = vs })
+				               .GroupJoin(VersionedString     .GetVersionDbSetStatic(context), m => m.Item1.LastName.Id  , v => v.VersionedId, (m, vs) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>> { Item1 = m.Item1, Item2 = m.Item2, Item3 = vs })
+				               .GroupJoin(VersionedDbGeography.GetVersionDbSetStatic(context), m => m.Item1.Location.Id  , v => v.VersionedId, (m, vs) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>> { Item1 = m.Item1, Item2 = m.Item2, Item3 = m.Item3, Item4 = vs})
+				               .GroupJoin(VersionedStanding   .GetVersionDbSetStatic(context), m => m.Item1.Standing.Id  , v => v.VersionedId, (m, vs) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>> { Item1 = m.Item1, Item2 = m.Item2, Item3 = m.Item3, Item4 = m.Item4, Item5 = vs })
+				               .GroupJoin(VersionedFriendship .GetVersionDbSetStatic(context), m => m.Item1.Friendship.Id, v => v.VersionedId, (m, vs) => new Mutuple<Person, IEnumerable<StringVersion>, IEnumerable<StringVersion>, IEnumerable<DbGeographyVersion>, IEnumerable<StandingVersion>, IEnumerable<FriendshipVersion>> { Item1 = m.Item1, Item2 = m.Item2, Item3 = m.Item3, Item4 = m.Item4, Item5 = m.Item5, Item6 = vs })
+				               .Select(m => new {
+					Person     = m.Item1,
+					FirstNameVersion  = m.Item2.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					LastNameVersion   = m.Item3.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					LocationVersion   = m.Item4.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					StandingVersion   = m.Item5.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt),
+					FriendshipVersion = m.Item6.OrderBy(x => x.Added).FirstOrDefault(v => v.Added >= dt)
 				});
 				// here we need to go over the results: for each non-null version, set the current value of the corresponding vp value AND modified, AND set IsReadOnly to true
 				var c = people.ToSnapshots(context, dt);
 				var d = people.MyGroupJoin(context.StringVersions, person => person.FirstName.Id, sv => sv.VersionedId, (person, gj1) => new {person, gj1});
 				var okay = aa.ToArray();
-
-				//var aa = from person in people
-				//		 from sv in context.StringVersions
-				//		 orderby sv.Added
-				//		 where sv.VersionedId == person.FirstName.Id
-				//		 //from sv2 in context.StringVersions
-				//		 //orderby sv2.Added
-				//		 //where sv2.VersionedId == person.LastName.Id
-				//		 //from dgv in context.DbGeographyVersions
-				//		 //orderby dgv.Added
-				//		 //where dgv.VersionedId == person.Location.Id
-				//		 select new {
-				//		     Person = person,
-				//			 FirstName = sv
-				//		 };
-
+				var okaySnapshot = okay.Select(x => {
+					var p = x.Person;
+					p.FirstName.IsReadOnly = true;
+					if (x.FirstNameVersion != null)
+						p.FirstName.value = x.FirstNameVersion.Value;
+					p.LastName.IsReadOnly = true;
+					if (x.LastNameVersion != null)
+						p.LastName.value = x.LastNameVersion.Value;
+					p.Location.IsReadOnly = true;
+					if (x.LocationVersion != null)
+						p.Location.value = x.LocationVersion.Value;
+					p.Standing.IsReadOnly = true;
+					if (x.StandingVersion != null)
+						p.Standing.value = x.StandingVersion.Value;
+					p.Friendship.IsReadOnly = true;
+					if (x.FriendshipVersion != null)
+						p.Friendship.value = x.FriendshipVersion.Value;
+					return p;
+				});
 			}
 		}
 

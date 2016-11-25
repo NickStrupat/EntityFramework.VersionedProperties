@@ -38,12 +38,20 @@ namespace EntityFramework.VersionedProperties {
 
 		/// <summary>Gets a boolean indicating the read-only state of <see cref="Value"/></summary>
 		[NotMapped]
+#if DEBUG
+		public Boolean IsReadOnly { get; set; }
+#else
 		public Boolean IsReadOnly { get; internal set; }
+#endif
 
 #if !DEBUG
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-		private TValue value;
+#if DEBUG
+		public TValue value;
+#else
+		internal TValue value;
+#endif
 		/// <summary>Gets or sets the value of this versioned property (the previous value is pushed into the versions collection for <see cref="TValue"/>)</summary>
 		public TValue Value {
 			get { return value; }
@@ -76,10 +84,13 @@ namespace EntityFramework.VersionedProperties {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
 		protected virtual TValue DefaultValue => default(TValue);
-		protected virtual DbSet<TVersion> GetVersionDbSet(TIVersions x) => getVersionDbSetFunc(x);
-		protected static readonly Func<TIVersions, DbSet<TVersion>> getVersionDbSetFunc = typeof(TIVersions).GetProperties()
-		                                                                                                    .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
-		                                                                                                    .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
+		protected virtual DbSet<TVersion> GetVersionDbSet(TIVersions x) => GetVersionDbSetFunc(x);
+		private static readonly Func<TIVersions, DbSet<TVersion>> GetVersionDbSetFunc = typeof(TIVersions).GetProperties()
+		                                                                                                  .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
+		                                                                                                  .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
+#if DEBUG
+		public static DbSet<TVersion> GetVersionDbSetStatic(TIVersions x) => GetVersionDbSetFunc(x);
+#endif
 
 		public override String ToString() => Value?.ToString() ?? String.Empty;
 		/// <summary>Gets the previous versions</summary>
@@ -122,24 +133,47 @@ namespace EntityFramework.VersionedProperties {
 #endregion
 	}
 
-#if NET40
 	internal static class TypeExtensions {
+#if NET40
 		internal static Type GetTypeInfo(this Type type) => type;
-	}
+#else
+		public static Type[] GetGenericArguments(this TypeInfo ti) => ti.GenericTypeArguments;
 #endif
+	}
 
 	public static class VersionedExtensions {
-		public static IQueryable<T> SelectSnapshots<T>(this IQueryable<T> source, DbContext context, DateTime dateTime)
+		public static ICollection<T> ToSnapshots<T>(this IQueryable<T> source, DbContext context, DateTime dateTime)
 		where T : class {
 			var vpis = typeof(T).GetTypeInfo().GetProperties().Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType));
 			var query = source;
 			foreach (var vpi in vpis) {
 				var vbt = GetVersionedBaseType(vpi.PropertyType);
-				var gas = vpi.PropertyType.GenericTypeArguments;
+				var gas = vpi.PropertyType.GetTypeInfo().GetGenericArguments();
 				//query = query.GroupJoin()
 			}
 
 			return null;
+		}
+
+		private static class Snapshots<T>
+		where T : class {
+			private static readonly PropertyInfo[] Vpis = typeof(T).GetTypeInfo().GetProperties().Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType)).ToArray();
+			private static readonly GenericTypes[] GenericTypes = Vpis.Select(x => new GenericTypes(GetVersionedBaseType(x.PropertyType).GetTypeInfo().GetGenericArguments())).ToArray();
+		}
+
+		private struct GenericTypes {
+			public Type Versioned;
+			public Type Value;
+			public Type Version;
+			public Type IVersions;
+
+			public GenericTypes(Type[] genericArguments) : this(genericArguments[0], genericArguments[1], genericArguments[2], genericArguments[3]) {}
+			public GenericTypes(Type versioned, Type value, Type version, Type versions) {
+				Versioned = versioned;
+				Value = value;
+				Version = version;
+				IVersions = versions;
+			}
 		}
 
 		private static Type GetVersionedBaseType(Type type) {

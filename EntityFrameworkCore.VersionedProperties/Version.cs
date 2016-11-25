@@ -28,6 +28,8 @@ namespace EntityFramework.VersionedProperties {
 
 		/// <summary>Gets the value of this verison of the data</summary>
 		public TValue Value { get; internal set; }
+
+		public override String ToString() => Value?.ToString() ?? String.Empty;
 	}
 
 	public abstract class RequiredValueVersionBase<TValue> : VersionBase<TValue>

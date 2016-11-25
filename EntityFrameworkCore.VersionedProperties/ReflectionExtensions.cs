@@ -7,12 +7,12 @@ namespace EntityFrameworkCore.VersionedProperties {
 #else
 namespace EntityFramework.VersionedProperties {
 #endif
-    internal static class ReflectionExtensions {
-	    public static Func<T, TProperty> GetPropertyGetter<T, TProperty>(this PropertyInfo propertyInfo) {
+	internal static class ReflectionExtensions {
+		public static Func<T, TProperty> GetPropertyGetter<T, TProperty>(this PropertyInfo propertyInfo) {
 			var instance = Expression.Parameter(typeof(T));
-		    var convert = Expression.Convert(instance, propertyInfo.DeclaringType);
-		    var call = Expression.Call(convert, propertyInfo.GetGetMethod());
+			var convert = Expression.Convert(instance, propertyInfo.DeclaringType);
+			var call = Expression.Call(convert, propertyInfo.GetGetMethod());
 			return Expression.Lambda<Func<T, TProperty>>(call, instance).Compile();
 		}
-    }
+	}
 }
