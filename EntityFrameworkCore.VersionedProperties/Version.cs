@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 #if EF_CORE
 namespace EntityFrameworkCore.VersionedProperties {
@@ -10,17 +11,21 @@ namespace EntityFramework.VersionedProperties {
 #endif
 	internal interface IVersion {}
 
+	[DebuggerDisplay("Value = {Value}")]
 	public abstract class VersionBase<TValue> : IVersion {
 		/// <summary>Gets the unique identifier for this version of the data</summary>
 		public Int64 Id { get; internal set; }
+
+		/// <summary>Gets the identifier for the entity which this verion represents</summary>
 #if !EF_CORE
 		// TODO: check if EF Core has IndexAttribute yet
 		[Index]
 #endif
-		/// <summary>Gets the identifier for the entity which this verion represents</summary>
 		public Guid VersionedId { get; internal set; }
+
 		/// <summary>Gets the date-time representing when this version was first assigned</summary>
 		public DateTime Added { get; internal set; }
+
 		/// <summary>Gets the value of this verison of the data</summary>
 		public TValue Value { get; internal set; }
 	}
