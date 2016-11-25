@@ -11,17 +11,32 @@ namespace EntityFrameworkCore.VersionedProperties {
 using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
-	public abstract class VersionedBase<TValue, TVersion, TIVersions> : IVersioned where TVersion : VersionBase<TValue>, new() {
+	public abstract class VersionedBase<TVersioned, TValue, TVersion, TIVersions> : IVersioned
+	where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>
+	where TVersion : VersionBase<TValue>, new()
+	where TIVersions : class {
+		/// <summary>Gets the unique identifier for this versioned property</summary>
 		public Guid Id { get; private set; } = Guid.Empty;
+		
+		/// <summary>Gets the date-time representing when this versioned property was last modified</summary>
 		public DateTime Modified { get; private set; } = DateTime.UtcNow;
 
 		private Boolean isInitialValue = true;
+
+		/// <summary>Gets the local versions (not yet persisted)</summary>
+		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
 		private readonly List<TVersion> internalLocalVersions = new List<TVersion>();
+
+		/// <summary>Gets a boolean indicating the read-only state of <see cref="Value"/></summary>
+		public Boolean IsReadOnly { get; internal set; }
 		
 		private TValue value;
+		/// <summary>Gets or sets the value of this versioned property (the previous value is pushed into the versions collection for <see cref="TValue"/>)</summary>
 		public TValue Value {
 			get { return value; }
 			set {
+				if (IsReadOnly)
+					throw new InvalidOperationException("This object is in a read-only state, possibly because it has been ");
 				if (isInitialValue)
 					isInitialValue = false;
 				else {
@@ -45,8 +60,8 @@ namespace EntityFramework.VersionedProperties {
 		}
 
 		protected virtual TValue DefaultValue => default(TValue);
-		protected virtual DbSet<TVersion> VersionDbSet(TIVersions x) => versionDbSet(x);
-		protected static readonly Func<TIVersions, DbSet<TVersion>> versionDbSet = typeof(TIVersions)
+		protected virtual DbSet<TVersion> GetVersionDbSet(TIVersions x) => getVersionDbSetFunc(x);
+		protected static readonly Func<TIVersions, DbSet<TVersion>> getVersionDbSetFunc = typeof(TIVersions)
 #if NET40
 		                                                                                             .GetTypeInfo()
 #endif
@@ -54,30 +69,40 @@ namespace EntityFramework.VersionedProperties {
 		                                                                                             .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
 		                                                                                             .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
 
-		public override String ToString() => Value == null ? String.Empty : Value.ToString();
-		public IEnumerable<TVersion> LocalVersions => internalLocalVersions;
-		public IOrderedQueryable<TVersion> Versions(TIVersions dbContext) => VersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
+		public override String ToString() => Value?.ToString() ?? String.Empty;
+		/// <summary>Gets the previous versions</summary>
+		/// <param name="dbContext"></param>
+		/// <returns></returns>
+		public IOrderedQueryable<TVersion> GetVersions(TIVersions dbContext) => GetVersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
 
 		#region IVersioned implementations
 		void IVersioned.AddVersionsToDbContext(DbContext dbContext) {
-			CheckDbContext(dbContext);
-			VersionDbSet((TIVersions)(Object)dbContext).AddRange(internalLocalVersions);
+			var versions = CheckDbContext(dbContext);
+			GetVersionDbSet(versions).AddRange(internalLocalVersions);
 		}
 
 		void IVersioned.RemoveVersionsFromDbContext(DbContext dbContext) {
-			CheckDbContext(dbContext);
-			VersionDbSet((TIVersions)(Object)dbContext).Where(x => x.VersionedId == Id).Delete();
+			var versions = CheckDbContext(dbContext);
+			GetVersionDbSet(versions).Where(x => x.VersionedId == Id).Delete();
 			internalLocalVersions.Clear();
 		}
 
-		private static void CheckDbContext(DbContext dbContext) {
-			if (dbContext is TIVersions)
-				return;
-			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).Name);
+		private static TIVersions CheckDbContext(DbContext dbContext) {
+			var iversions = dbContext as TIVersions;
+			if (iversions != null)
+				return iversions;
+			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).FullName);
 		}
 
 		void IVersioned.SetIsInitialValueFalse() => isInitialValue = false;
 		void IVersioned.ClearInternalLocalVersions() => internalLocalVersions.Clear();
 		#endregion
+	}
+
+	public static class VersionedExtensions {
+		public static IQueryable<T> SelectSnapshots<T>(this IQueryable<T> source, DateTime dateTime)
+		where T : class {
+			return null;
+		}
 	}
 }

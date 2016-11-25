@@ -5,9 +5,11 @@ namespace EntityFrameworkCore.VersionedProperties {
 #else
 namespace EntityFramework.VersionedProperties {
 #endif
-	public abstract class VersionedRequiredValueBase<TValue, TVersion, TIVersions> : VersionedBase<TValue, TVersion, TIVersions>
+	public abstract class VersionedRequiredValueBase<TVersioned, TValue, TVersion, TIVersions> : VersionedBase<TVersioned, TValue, TVersion, TIVersions>
+	where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>
 	where TValue : class
-	where TVersion : RequiredValueVersionBase<TValue>, new() {
+	where TVersion : RequiredValueVersionBase<TValue>, new()
+	where TIVersions : class {
 		[Required]
 		public new TValue Value {
 			get { return base.Value; }
