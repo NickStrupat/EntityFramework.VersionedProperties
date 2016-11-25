@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0-*",
 
-	"buildOptions": { "define" : [ "NET_CORE", "EF_CORE" ] },
+	"buildOptions": { "define": [ "NET_CORE", "EF_CORE" ] },
 
 	"configurations": {
 		"Debug": {
