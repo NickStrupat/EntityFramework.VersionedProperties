@@ -87,7 +87,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ContextWithVersionedProperties.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="UnitTest1.cs" />

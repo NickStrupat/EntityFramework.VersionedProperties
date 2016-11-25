@@ -8,11 +8,15 @@ using EntityFramework.VersionedProperties;
 
 namespace Example {
 	class Program {
+		static Program() {
+			SqlServerTypes.Utilities.LoadNativeAssemblies(AppDomain.CurrentDomain.BaseDirectory);
+		}
+
 		public enum Standing { Good, Fair, Poor }
 		public class StandingVersion : VersionBase<Standing> { }
 		[ComplexType]
-		public class VersionedStanding : VersionedBase<Standing, StandingVersion, IStandingVersions> {
-			protected override Func<IStandingVersions, DbSet<StandingVersion>> VersionDbSet => x => x.StandingVersions;
+		public class VersionedStanding : VersionedBase<VersionedStanding, Standing, StandingVersion, IStandingVersions> {
+			protected override DbSet<StandingVersion> GetVersionDbSet(IStandingVersions x) => x.StandingVersions;
 		}
 		public interface IStandingVersions {
 			DbSet<StandingVersion> StandingVersions { get; set; }
@@ -28,36 +32,31 @@ namespace Example {
 				IsBestFriend = isBestFriend;
 			}
 		}
-		public class FriendshipVersion : VersionBase<Friendship> {}
+		public class FriendshipVersion : RequiredValueVersionBase<Friendship> {}
+
 		[ComplexType]
-		public class VersionedFriendship : RequiredValueVersionedBase<Friendship, FriendshipVersion, IFriendshipVersions> {
+		public class VersionedFriendship : VersionedRequiredValueBase<VersionedFriendship, Friendship, FriendshipVersion, IFriendshipVersions> {
 			protected override Friendship DefaultValue => new Friendship();
-			protected override Func<IFriendshipVersions, DbSet<FriendshipVersion>> VersionDbSet => x => x.FriendshipVersions;
+			protected override DbSet<FriendshipVersion> GetVersionDbSet(IFriendshipVersions x) => x.FriendshipVersions;
 		}
 		public interface IFriendshipVersions {
 			DbSet<FriendshipVersion> FriendshipVersions { get; set; }
 		}
 
-		public class VersionedProperties : IVersionedProperties {
-			public VersionedProperties() {
-				this.InitializeVersionedProperties();
-			}
-		}
-
-		public class Person : VersionedProperties {
+		public class Person {
 			public Int64 Id { get; private set; }
 			public DateTime Inserted { get; private set; }
 			public DateTime Updated { get; private set; }
-			public VersionedString FirstName { get; private set; }
-			public VersionedString LastName { get; private set; }
-			public VersionedDbGeography Location { get; private set; }
-			public VersionedStanding Standing { get; private set; }
-			public VersionedFriendship Friendship { get; private set; }
+			public VersionedString FirstName { get; private set; } = new VersionedString();
+			public VersionedString LastName { get; private set; } = new VersionedString();
+			public VersionedDbGeography Location { get; private set; } = new VersionedDbGeography();
+			public VersionedStanding Standing { get; private set; } = new VersionedStanding();
+			public VersionedFriendship Friendship { get; private set; } = new VersionedFriendship();
 
-			public Person() {
-				this.InitializeVersionedProperties();
-				this.Triggers().Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
-				this.Triggers().Updating += e => e.Entity.Updated = DateTime.Now;
+			static Person() {
+				VersionedProperties<Person>.Initialize();
+				Triggers<Person>.Inserting += e => e.Entity.Inserted = e.Entity.Updated = DateTime.Now;
+				Triggers<Person>.Updating += e => e.Entity.Updated = DateTime.Now;
 			}
 		}
 
@@ -90,7 +89,7 @@ namespace Example {
 				nickStrupat.Location.Value = DbGeography.FromText("POINT(-79.3777061 43.7182713)");
 				//context.People.Add(nickStrupat);
 				context.SaveChanges();
-				var locations = new[] { nickStrupat.Location.Value }.Concat(nickStrupat.Location.Versions(context).Select(x => x.Value)).ToArray();
+				var locations = new[] { nickStrupat.Location.Value }.Concat(nickStrupat.Location.GetVersions(context).Select(x => x.Value)).ToArray();
 				var distanceTravelledAsTheCrowFlies = locations.Skip(1).Select((x, i) => x.Distance(locations[i])).Sum();
 			}
 		}

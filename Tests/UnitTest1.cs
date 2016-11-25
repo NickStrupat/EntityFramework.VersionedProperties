@@ -32,6 +32,9 @@ namespace EntityFramework.VersionedProperties.Tests {
 				a.WaitOne();
 		}
 
+		static UnitTest1() {
+		}
+
 		[TestMethod]
 		public void TestMethod1() => TestMethod1(true);
 
@@ -53,10 +56,10 @@ namespace EntityFramework.VersionedProperties.Tests {
 				person.LastName.Value = "Sputnik";
 				context.SaveChanges();
 				Assert.IsTrue(context.StringVersions.Count() == 2);
-				Assert.IsTrue(person.LastName.Versions(context).Single().Value == "Strupat");
+				Assert.IsTrue(person.LastName.GetVersions(context).Single().Value == "Strupat");
 
 				Boolean updateFailed = false;
-				person.Triggers().UpdateFailed += e => updateFailed = true;
+				Triggers<Person>.UpdateFailed += e => updateFailed = true;
 				try {
 					person.Inserted = new DateTime();
 					context.SaveChanges(); // Should throw here about datetime2
@@ -72,8 +75,14 @@ namespace EntityFramework.VersionedProperties.Tests {
 				person.FirstName.Value = "TEST";
 				context.People.Remove(person);
 				context.SaveChanges();
-				Assert.IsFalse(person.FirstName.Versions(context).Any());
-				Assert.IsFalse(person.LastName.Versions(context).Any());
+				Assert.IsFalse(person.FirstName.GetVersions(context).Any());
+				Assert.IsFalse(person.LastName.GetVersions(context).Any());
+
+				var onceMore = new Person();
+				onceMore.FirstName.Value = "Woot";
+				onceMore.LastName.Value = "Foobar";
+				context.People.Add(onceMore);
+				context.SaveChanges();
 
 				context.Database.Delete();
 			}
