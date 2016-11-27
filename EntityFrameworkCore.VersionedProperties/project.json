@@ -19,6 +19,7 @@
 
 	"dependencies": {
 		"EntityFrameworkCore.Triggers": "1.0.5",
+		"Mutuple": "0.2.0",
 		"Z.EntityFramework.Plus.EFCore": "1.4.10"
 	},
 

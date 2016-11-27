@@ -62,7 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Mutuple.net45, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mutuple.0.1.0\lib\net45\Mutuple.net45.dll</HintPath>
+      <HintPath>..\packages\Mutuple.0.2.0\lib\net45\Mutuple.net45.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

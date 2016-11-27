@@ -179,6 +179,15 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+      "Mutuple/0.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Mutuple.net45.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Mutuple.net45.dll": {}
+        }
+      },
       "NETStandard.Library/1.6.1": {
         "type": "package",
         "dependencies": {
@@ -849,6 +858,18 @@
         },
         "compile": {
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "Mutuple/0.2.0": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/Mutuple.netstandard1.3.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Mutuple.netstandard1.3.dll": {}
         }
       },
       "NETStandard.Library/1.6.1": {
@@ -2090,6 +2111,18 @@
         "ref/xamarinmac20/_._",
         "ref/xamarintvos10/_._",
         "ref/xamarinwatchos10/_._"
+      ]
+    },
+    "Mutuple/0.2.0": {
+      "sha512": "BWuk2WiTWQN001apuu87crkMI8UUeM/iNaRoOmif/93YLNnarJEm0+920LEGY2BCtP1CJSZHXkk2791ZhjtnMw==",
+      "type": "package",
+      "path": "Mutuple/0.2.0",
+      "files": [
+        "Mutuple.0.2.0.nupkg.sha512",
+        "Mutuple.nuspec",
+        "lib/net40/Mutuple.net40.dll",
+        "lib/net45/Mutuple.net45.dll",
+        "lib/netstandard1.3/Mutuple.netstandard1.3.dll"
       ]
     },
     "NETStandard.Library/1.6.1": {
@@ -5331,6 +5364,7 @@
   "projectFileDependencyGroups": {
     "": [
       "EntityFrameworkCore.Triggers >= 1.0.5",
+      "Mutuple >= 0.2.0",
       "Z.EntityFramework.Plus.EFCore >= 1.4.10"
     ],
     ".NETFramework,Version=v4.5.1": [],
