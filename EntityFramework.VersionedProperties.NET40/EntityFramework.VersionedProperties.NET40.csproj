@@ -104,7 +104,7 @@
     <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedBase.cs">
       <Link>VersionedBase.cs</Link>
     </Compile>
-    <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedProperties`1.cs">
+    <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedProperties_1.cs">
       <Link>VersionedProperties`1.cs</Link>
     </Compile>
     <Compile Include="..\EntityFrameworkCore.VersionedProperties\VersionedRequiredValueBase.cs">
