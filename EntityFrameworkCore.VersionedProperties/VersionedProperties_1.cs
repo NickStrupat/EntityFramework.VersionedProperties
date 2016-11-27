@@ -45,22 +45,22 @@ namespace EntityFramework.VersionedProperties {
 
 		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).AddVersionsToDbContext(entry.Context);
+				versionedPropertyMapping(entry.Entity).OnInsertingOrUpdating(entry.Context);
 		}
 
 		private static void OnInsertedOrUpdated(IAfterEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).ClearInternalLocalVersions();
+				versionedPropertyMapping(entry.Entity).OnInsertedOrUpdated();
 		}
 
 		private static void OnInserted(IEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).SetIsInitialValueFalse();
+				versionedPropertyMapping(entry.Entity).OnInserted();
 		}
 
 		private static void OnDeleted(IEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).RemoveVersionsFromDbContext(entry.Context);
+				versionedPropertyMapping(entry.Entity).OnDeleted(entry.Context);
 		}
 
 		private static Func<TVersionedProperties, IVersioned> GetPropertyGetter(PropertyInfo propertyInfo) {

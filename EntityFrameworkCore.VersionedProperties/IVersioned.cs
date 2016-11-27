@@ -6,9 +6,10 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	internal interface IVersioned {
-		void AddVersionsToDbContext(DbContext dbContext);
-		void RemoveVersionsFromDbContext(DbContext dbContext);
-		void ClearInternalLocalVersions();
-		void SetIsInitialValueFalse();
+		void OnInserted();
+		void OnInsertingOrUpdating(DbContext dbContext);
+		void OnInsertedOrUpdated();
+		void OnDeleted(DbContext dbContext);
+		void SetSnapshotVersion(IVersion version);
 	}
 }

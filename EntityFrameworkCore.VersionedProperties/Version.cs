@@ -9,7 +9,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Spatial;
 namespace EntityFramework.VersionedProperties {
 #endif
-	internal interface IVersion {}
+
+#if DEBUG
+	public
+#else
+	internal
+#endif
+	interface IVersion {}
 
 	[DebuggerDisplay("Value = {Value}")]
 	public abstract class VersionBase<TValue> : IVersion {
