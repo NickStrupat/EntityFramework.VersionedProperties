@@ -42,24 +42,18 @@ namespace EntityFramework.VersionedProperties {
 			get { return id; }
 			private set { NotifyChangeIfNotEqual(ref id, value, idPropertyChangingEventArgs, idPropertyChangedEventArgs); }
 		}
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private Guid id;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangingEventArgs idPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Id));
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangedEventArgs idPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Id));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Guid id;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs idPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Id));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs idPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Id));
 
 		/// <summary>Gets the date-time representing when this versioned property was last modified</summary>
 		public DateTime Modified {
 			get { return modified; }
 			internal set { NotifyChangeIfNotEqual(ref modified, value, modifiedPropertyChangingEventArgs, modifiedPropertyChangedEventArgs); }
 		}
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private DateTime modified;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangingEventArgs modifiedPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Modified));
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangedEventArgs modifiedPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Modified));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private DateTime modified;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs modifiedPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Modified));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs modifiedPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Modified));
 
 		/// <summary>Gets a boolean indicating the read-only state of <see cref="Value"/></summary>
 		[NotMapped]
@@ -67,12 +61,9 @@ namespace EntityFramework.VersionedProperties {
 			get { return isReadOnly; }
 			private set { NotifyChangeIfNotEqual(ref isReadOnly, value, isReadOnlyPropertyChangingEventArgs, isReadOnlyPropertyChangedEventArgs); }
 		}
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private Boolean isReadOnly;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangingEventArgs isReadOnlyPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(IsReadOnly));
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangedEventArgs isReadOnlyPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(IsReadOnly));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Boolean isReadOnly;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs isReadOnlyPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(IsReadOnly));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs isReadOnlyPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(IsReadOnly));
 
 		/// <summary>Gets or sets the value of this versioned property (the previous value is pushed into the versions collection for <see cref="TVersion"/> in <see cref="TIVersions"/>)</summary>
 		public TValue Value {
@@ -97,18 +88,13 @@ namespace EntityFramework.VersionedProperties {
 				Modified = DateTime.UtcNow;
 			}
 		}
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private TValue value;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangingEventArgs valuePropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Value));
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly PropertyChangedEventArgs valuePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Value));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private TValue value;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs valuePropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Value));
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs valuePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Value));
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private Boolean isInitialValue;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Boolean isInitialValue;
 		
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private readonly ObservableCollection<TVersion> internalLocalVersions;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly ObservableCollection<TVersion> internalLocalVersions;
 		
 		/// <summary>Gets the local versions (not yet persisted)</summary>
 		public ReadOnlyObservableCollection<TVersion> LocalVersions { get; }
@@ -140,7 +126,7 @@ namespace EntityFramework.VersionedProperties {
 		}
 #endif
 
-#region IVersioned implementations
+		#region IVersioned implementations
 		void IVersioned.OnInsertingOrUpdating(DbContext dbContext) {
 			var versions = CheckDbContext(dbContext);
 			GetVersionDbSet(versions).AddRange(internalLocalVersions);
@@ -161,7 +147,6 @@ namespace EntityFramework.VersionedProperties {
 
 		void IVersioned.OnInserted() => Id = Guid.NewGuid();
 		void IVersioned.OnInsertedOrUpdated() => internalLocalVersions.Clear();
-		#endregion
 
 #if DEBUG
 		public void
@@ -176,6 +161,7 @@ namespace EntityFramework.VersionedProperties {
 			NotifyChangeIfNotEqual(ref value, v.Value, nameof(Value));
 			Modified = v.Added;
 		}
+		#endregion
 
 		#region PropertyChange implementations
 		protected void NotifyChange<T>(ref T backingField, T newValue, PropertyChangingEventArgs propertyChangingEventArgs, PropertyChangedEventArgs propertyChangedEventArgs) {
