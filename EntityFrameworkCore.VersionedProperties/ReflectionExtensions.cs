@@ -9,10 +9,19 @@ namespace EntityFramework.VersionedProperties {
 #endif
 	internal static class ReflectionExtensions {
 		public static Func<T, TProperty> GetPropertyGetter<T, TProperty>(this PropertyInfo propertyInfo) {
-			var instance = Expression.Parameter(typeof(T));
-			var convert = Expression.Convert(instance, propertyInfo.DeclaringType);
-			var call = Expression.Call(convert, propertyInfo.GetGetMethod());
-			return Expression.Lambda<Func<T, TProperty>>(call, instance).Compile();
+#if NET40
+			return (Func<T, TProperty>) Delegate.CreateDelegate(typeof(Func<T, TProperty>), propertyInfo?.GetGetMethod(nonPublic: true), throwOnBindFailure: true);
+#else
+			return (Func<T, TProperty>) propertyInfo.GetGetMethod(nonPublic: true).CreateDelegate(typeof(Func<T, TProperty>));
+#endif
+		}
+
+		public static Action<T, TProperty> GetPropertySetter<T, TProperty>(this PropertyInfo propertyInfo) {
+#if NET40
+			return (Action<T, TProperty>) Delegate.CreateDelegate(typeof(Action<T, TProperty>), propertyInfo?.GetSetMethod(nonPublic: true), throwOnBindFailure:true);
+#else
+			return (Action<T, TProperty>) propertyInfo.GetSetMethod(nonPublic: true).CreateDelegate(typeof(Action<T, TProperty>));
+#endif
 		}
 	}
 }
