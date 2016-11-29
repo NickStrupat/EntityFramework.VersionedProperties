@@ -19,7 +19,6 @@ namespace EntityFramework.VersionedProperties {
 	[ComplexType] public sealed class VersionedInt32                  : VersionedBase<VersionedInt32, Int32, Int32Version, IInt32Versions> {}
 	[ComplexType] public sealed class VersionedInt64                  : VersionedBase<VersionedInt64, Int64, Int64Version, IInt64Versions> {}
 	[ComplexType] public sealed class VersionedByte                   : VersionedBase<VersionedByte, Byte, ByteVersion, IByteVersions> {}
-	[ComplexType] public sealed class VersionedSByte                  : VersionedBase<VersionedSByte, SByte, SByteVersion, ISByteVersions> {}
 	#endregion
 	#region Nullable primitives
 	[ComplexType] public sealed class VersionedNullableBoolean        : VersionedBase<VersionedNullableBoolean, Boolean?, NullableBooleanVersion, INullableBooleanVersions> {}
@@ -33,7 +32,6 @@ namespace EntityFramework.VersionedProperties {
 	[ComplexType] public sealed class VersionedNullableInt32          : VersionedBase<VersionedNullableInt32, Int32?, NullableInt32Version, INullableInt32Versions> {}
 	[ComplexType] public sealed class VersionedNullableInt64          : VersionedBase<VersionedNullableInt64, Int64?, NullableInt64Version, INullableInt64Versions> {}
 	[ComplexType] public sealed class VersionedNullableByte           : VersionedBase<VersionedNullableByte,  Byte?, NullableByteVersion, INullableByteVersions> {}
-	[ComplexType] public sealed class VersionedNullableSByte          : VersionedBase<VersionedNullableSByte, SByte?, NullableSByteVersion, INullableSByteVersions> {}
 	#endregion
 	[ComplexType] public sealed class VersionedString                 : VersionedBase<VersionedString, String, StringVersion, IStringVersions> {}
 	[ComplexType] public sealed class VersionedRequiredString         : VersionedRequiredValueBase<VersionedRequiredString, String, RequiredStringVersion, IRequiredStringVersions> {

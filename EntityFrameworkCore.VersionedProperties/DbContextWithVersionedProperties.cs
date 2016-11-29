@@ -30,39 +30,39 @@ namespace EntityFramework.VersionedProperties {
 			modelBuilder.Entity(versionType).HasIndex(nameof(VersionBase<Object>.Value));
 		}
 #endif
-	public virtual DbSet<BooleanVersion               > BooleanVersions                { get; set; }
-	public virtual DbSet<DateTimeVersion              > DateTimeVersions               { get; set; }
-	public virtual DbSet<DateTimeOffsetVersion        > DateTimeOffsetVersions         { get; set; }
-	public virtual DbSet<DecimalVersion               > DecimalVersions                { get; set; }
-	public virtual DbSet<DoubleVersion                > DoubleVersions                 { get; set; }
-	public virtual DbSet<SingleVersion                > SingleVersions                 { get; set; }
-	public virtual DbSet<GuidVersion                  > GuidVersions                   { get; set; }
-	public virtual DbSet<Int16Version                 > Int16Versions                  { get; set; }
-	public virtual DbSet<Int32Version                 > Int32Versions                  { get; set; }
-	public virtual DbSet<Int64Version                 > Int64Versions                  { get; set; }
-	public virtual DbSet<ByteVersion                  > ByteVersions                   { get; set; }
-	public virtual DbSet<SByteVersion                 > SByteVersions                  { get; set; }
+		public virtual DbSet<BooleanVersion               > BooleanVersions                { get; set; }
+		public virtual DbSet<DateTimeVersion              > DateTimeVersions               { get; set; }
+		public virtual DbSet<DateTimeOffsetVersion        > DateTimeOffsetVersions         { get; set; }
+		public virtual DbSet<DecimalVersion               > DecimalVersions                { get; set; }
+		public virtual DbSet<DoubleVersion                > DoubleVersions                 { get; set; }
+		public virtual DbSet<SingleVersion                > SingleVersions                 { get; set; }
+		public virtual DbSet<GuidVersion                  > GuidVersions                   { get; set; }
+		public virtual DbSet<Int16Version                 > Int16Versions                  { get; set; }
+		public virtual DbSet<Int32Version                 > Int32Versions                  { get; set; }
+		public virtual DbSet<Int64Version                 > Int64Versions                  { get; set; }
+		public virtual DbSet<ByteVersion                  > ByteVersions                   { get; set; }
 
-	public virtual DbSet<NullableBooleanVersion       > NullableBooleanVersions        { get; set; }
-	public virtual DbSet<NullableDateTimeVersion      > NullableDateTimeVersions       { get; set; }
-	public virtual DbSet<NullableDateTimeOffsetVersion> NullableDateTimeOffsetVersions { get; set; }
-	public virtual DbSet<NullableDecimalVersion       > NullableDecimalVersions        { get; set; }
-	public virtual DbSet<NullableDoubleVersion        > NullableDoubleVersions         { get; set; }
-	public virtual DbSet<NullableSingleVersion        > NullableSingleVersions         { get; set; }
-	public virtual DbSet<NullableGuidVersion          > NullableGuidVersions           { get; set; }
-	public virtual DbSet<NullableInt16Version         > NullableInt16Versions          { get; set; }
-	public virtual DbSet<NullableInt32Version         > NullableInt32Versions          { get; set; }
-	public virtual DbSet<NullableInt64Version         > NullableInt64Versions          { get; set; }
-	public virtual DbSet<NullableByteVersion          > NullableByteVersions           { get; set; }
-	public virtual DbSet<NullableSByteVersion         > NullableSByteVersions          { get; set; }
+		public virtual DbSet<NullableBooleanVersion       > NullableBooleanVersions        { get; set; }
+		public virtual DbSet<NullableDateTimeVersion      > NullableDateTimeVersions       { get; set; }
+		public virtual DbSet<NullableDateTimeOffsetVersion> NullableDateTimeOffsetVersions { get; set; }
+		public virtual DbSet<NullableDecimalVersion       > NullableDecimalVersions        { get; set; }
+		public virtual DbSet<NullableDoubleVersion        > NullableDoubleVersions         { get; set; }
+		public virtual DbSet<NullableSingleVersion        > NullableSingleVersions         { get; set; }
+		public virtual DbSet<NullableGuidVersion          > NullableGuidVersions           { get; set; }
+		public virtual DbSet<NullableInt16Version         > NullableInt16Versions          { get; set; }
+		public virtual DbSet<NullableInt32Version         > NullableInt32Versions          { get; set; }
+		public virtual DbSet<NullableInt64Version         > NullableInt64Versions          { get; set; }
+		public virtual DbSet<NullableByteVersion          > NullableByteVersions           { get; set; }
 
-	public virtual DbSet<StringVersion                > StringVersions                 { get; set; }
-	public virtual DbSet<RequiredStringVersion        > RequiredStringVersions         { get; set; }
-	public virtual DbSet<ByteArrayVersion             > ByteArrayVersions              { get; set; }
-	public virtual DbSet<RequiredByteArrayVersion     > RequiredByteArrayVersions      { get; set; }
+		public virtual DbSet<StringVersion                > StringVersions                 { get; set; }
+		public virtual DbSet<RequiredStringVersion        > RequiredStringVersions         { get; set; }
+		public virtual DbSet<ByteArrayVersion             > ByteArrayVersions              { get; set; }
+		public virtual DbSet<RequiredByteArrayVersion     > RequiredByteArrayVersions      { get; set; }
 #if !EF_CORE
-	public virtual DbSet<DbGeographyVersion           > DbGeographyVersions            { get; set; }
-	public virtual DbSet<DbGeometryVersion            > DbGeometryVersions             { get; set; }
-	public virtual DbSet<RequiredDbGeographyVersion   > RequiredDbGeographyVersions    { get; set; }
-	public virtual DbSet<RequiredDbGeometryVersion    > RequiredDbGeometryVersions     { get; set; }
+		public virtual DbSet<DbGeographyVersion           > DbGeographyVersions            { get; set; }
+		public virtual DbSet<DbGeometryVersion            > DbGeometryVersions             { get; set; }
+		public virtual DbSet<RequiredDbGeographyVersion   > RequiredDbGeographyVersions    { get; set; }
+		public virtual DbSet<RequiredDbGeometryVersion    > RequiredDbGeometryVersions     { get; set; }
+#endif
+	}
 }

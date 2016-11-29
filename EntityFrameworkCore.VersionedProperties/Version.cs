@@ -59,7 +59,6 @@ namespace EntityFramework.VersionedProperties {
 	public sealed class Int32Version                  : VersionBase<Int32         > {}
 	public sealed class Int64Version                  : VersionBase<Int64         > {}
 	public sealed class ByteVersion                   : VersionBase<Byte          > {}
-	public sealed class SByteVersion                  : VersionBase<SByte         > {}
 	#endregion
 	#region Nullable primitives
 	public sealed class NullableBooleanVersion        : VersionBase<Boolean?       > { }
@@ -73,7 +72,6 @@ namespace EntityFramework.VersionedProperties {
 	public sealed class NullableInt32Version          : VersionBase<Int32?         > { }
 	public sealed class NullableInt64Version          : VersionBase<Int64?         > { }
 	public sealed class NullableByteVersion           : VersionBase<Byte?          > { }
-	public sealed class NullableSByteVersion          : VersionBase<SByte?         > { }
 	#endregion
 	public sealed class StringVersion                 : VersionBase<String> {}
 	public sealed class RequiredStringVersion         : RequiredValueVersionBase<String> {}

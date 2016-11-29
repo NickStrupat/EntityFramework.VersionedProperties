@@ -25,7 +25,6 @@ namespace EntityFramework.VersionedProperties {
 		, IInt32Versions
 		, IInt64Versions
 		, IByteVersions
-		, ISByteVersions
 
 		, INullableBooleanVersions
 		, INullableDateTimeVersions
@@ -38,7 +37,6 @@ namespace EntityFramework.VersionedProperties {
 		, INullableInt32Versions
 		, INullableInt64Versions
 		, INullableByteVersions
-		, INullableSByteVersions
 
 		, IStringVersions
 		, IRequiredStringVersions
@@ -63,7 +61,6 @@ namespace EntityFramework.VersionedProperties {
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface IInt32Versions                  { DbSet<Int32Version                 > Int32Versions                  { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface IInt64Versions                  { DbSet<Int64Version                 > Int64Versions                  { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface IByteVersions                   { DbSet<ByteVersion                  > ByteVersions                   { get; set; } }
-	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface ISByteVersions                  { DbSet<SByteVersion                 > SByteVersions                  { get; set; } }
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableBooleanVersions        { DbSet<NullableBooleanVersion       > NullableBooleanVersions        { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableDateTimeVersions       { DbSet<NullableDateTimeVersion      > NullableDateTimeVersions       { get; set; } }
@@ -76,7 +73,6 @@ namespace EntityFramework.VersionedProperties {
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableInt32Versions          { DbSet<NullableInt32Version         > NullableInt32Versions          { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableInt64Versions          { DbSet<NullableInt64Version         > NullableInt64Versions          { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableByteVersions           { DbSet<NullableByteVersion          > NullableByteVersions           { get; set; } }
-	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface INullableSByteVersions          { DbSet<NullableSByteVersion         > NullableSByteVersions          { get; set; } }
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface IStringVersions                 { DbSet<StringVersion                > StringVersions                 { get; set; } }
 	[EditorBrowsable(EditorBrowsableState.Advanced)] public interface IRequiredStringVersions         { DbSet<RequiredStringVersion        > RequiredStringVersions         { get; set; } }
