@@ -1,9 +1,11 @@
 ﻿#if EF_CORE
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+
 namespace EntityFrameworkCore.VersionedProperties.Tests {
 #else
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
+
 namespace EntityFramework.VersionedProperties.Tests {
 #endif
 	public class Context : DbContextWithVersionedProperties {
