@@ -6,7 +6,6 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	internal interface IVersioned {
-		void OnInserted();
 		void OnInsertingOrUpdating(DbContext dbContext);
 		void OnInsertedOrUpdated();
 		void OnDeleted(DbContext dbContext);

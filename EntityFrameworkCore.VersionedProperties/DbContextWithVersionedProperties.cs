@@ -25,7 +25,6 @@ namespace EntityFramework.VersionedProperties {
 			                       .Where(x => x.PropertyType.GetTypeInfo().IsGenericType && typeof(DbSet<>) == x.PropertyType.GetGenericTypeDefinition())
 			                       .Select(x => x.PropertyType.GenericTypeArguments.Single())
 			                       .Where(x => typeof(IVersion).IsAssignableFrom(x))
-			                       //.Select(x => x.GetTypeInfo().BaseType.GenericTypeArguments.Single())
 			                       .Distinct()
 			                       .ToArray();
 			foreach (var versionType in versionTypes)
