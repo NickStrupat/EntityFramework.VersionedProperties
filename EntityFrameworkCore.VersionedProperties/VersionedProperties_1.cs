@@ -32,7 +32,6 @@ namespace EntityFramework.VersionedProperties {
 				Triggers<TVersionedProperties, TDbContext>.Updating += OnInsertingOrUpdating;
 				Triggers<TVersionedProperties, TDbContext>.Inserted += OnInsertedOrUpdated;
 				Triggers<TVersionedProperties, TDbContext>.Updated += OnInsertedOrUpdated;
-				Triggers<TVersionedProperties, TDbContext>.Inserted += OnInserted;
 				Triggers<TVersionedProperties, TDbContext>.Deleted += OnDeleted;
 				initialized = true;
 			}
@@ -40,36 +39,22 @@ namespace EntityFramework.VersionedProperties {
 
 		private static readonly Func<TVersionedProperties, IVersioned>[] versionedPropertyGetters = typeof(TVersionedProperties).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
 		                                                                                                                        .Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType))
-		                                                                                                                        .Select(GetPropertyGetter)
+		                                                                                                                        .Select(ReflectionExtensions.GetPropertyGetter<TVersionedProperties, IVersioned>)
 		                                                                                                                        .ToArray();
 
 		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).OnInsertingOrUpdating(entry.Context);
+				versionedPropertyMapping(entry.Entity)?.OnInsertingOrUpdating(entry.Context);
 		}
 
 		private static void OnInsertedOrUpdated(IAfterEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).OnInsertedOrUpdated();
-		}
-
-		private static void OnInserted(IEntry<TVersionedProperties, TDbContext> entry) {
-			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).OnInserted();
+				versionedPropertyMapping(entry.Entity)?.OnInsertedOrUpdated();
 		}
 
 		private static void OnDeleted(IEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
-				versionedPropertyMapping(entry.Entity).OnDeleted(entry.Context);
-		}
-
-		private static Func<TVersionedProperties, IVersioned> GetPropertyGetter(PropertyInfo propertyInfo) {
-			var instance = Expression.Parameter(typeof(TVersionedProperties));
-			var call = Expression.Call(
-				Expression.Convert(instance, propertyInfo.DeclaringType),
-				propertyInfo.GetGetMethod()
-				);
-			return Expression.Lambda<Func<TVersionedProperties, IVersioned>>(call, instance).Compile();
+				versionedPropertyMapping(entry.Entity)?.OnDeleted(entry.Context);
 		}
 	}
 }
