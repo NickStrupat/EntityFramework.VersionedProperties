@@ -20,14 +20,16 @@ namespace EntityFramework.VersionedProperties {
 #if EF_CORE
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
 			base.OnModelCreating(modelBuilder);
-			foreach (var versionType in this.GetType()
-			                                .GetProperties()
-			                                .Where(x => typeof(DbSet<>) == x.PropertyType.GetGenericTypeDefinition())
-			                                .Select(x => x.PropertyType.GenericTypeArguments.Single())
-			                                .Where(x => typeof(IVersion).IsAssignableFrom(x))
-			                                .Select(x => x.GetTypeInfo().BaseType.GenericTypeArguments.Single())
-			                                .Distinct())
-			modelBuilder.Entity(versionType).HasIndex(nameof(VersionBase<Object>.Value));
+			var versionTypes = this.GetType()
+			                       .GetProperties()
+			                       .Where(x => x.PropertyType.GetTypeInfo().IsGenericType && typeof(DbSet<>) == x.PropertyType.GetGenericTypeDefinition())
+			                       .Select(x => x.PropertyType.GenericTypeArguments.Single())
+			                       .Where(x => typeof(IVersion).IsAssignableFrom(x))
+			                       //.Select(x => x.GetTypeInfo().BaseType.GenericTypeArguments.Single())
+			                       .Distinct()
+			                       .ToArray();
+			foreach (var versionType in versionTypes)
+				modelBuilder.Entity(versionType).HasIndex(nameof(VersionBase<Object>.Value));
 		}
 #endif
 		public virtual DbSet<BooleanVersion               > BooleanVersions                { get; set; }
