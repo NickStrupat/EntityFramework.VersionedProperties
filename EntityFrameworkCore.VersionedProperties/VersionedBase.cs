@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Mutuples;
@@ -22,39 +24,84 @@ using System.Data.Entity;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[DebuggerDisplay("Value = {Value}")]
-	public abstract class VersionedBase<TVersioned, TValue, TVersion, TIVersions> : IVersioned, INotifyPropertyChanging, INotifyPropertyChanged
-	where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>
+	public abstract class VersionedBase<TVersioned, TValue, TVersion, TIVersions> : IVersioned, INotifyPropertyChanging, INotifyPropertyChanged, IEquatable<TVersioned>
+	where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>, new()
 	where TVersion : VersionBase<TValue>, new()
 	where TIVersions : class {
 		protected VersionedBase() {
 			id = Guid.Empty;
-			modified = default(DateTime);
-			isInitialValue = true;
+			modified = default(DateTime?);
+			isReadOnly = false;
 			value = DefaultValue;
 			internalLocalVersions = new ObservableCollection<TVersion>();
 			LocalVersions = new ReadOnlyObservableCollection<TVersion>(internalLocalVersions);
 		}
 
+		internal TVersioned Clone() {
+			return new TVersioned {
+				id = id,
+				modified = modified,
+				isReadOnly = isReadOnly,
+				value = value,
+				internalLocalVersions = new ObservableCollection<TVersion>(internalLocalVersions),
+				LocalVersions = new ReadOnlyObservableCollection<TVersion>(internalLocalVersions)
+			};
+		}
+
 		public override String ToString() => Value?.ToString() ?? String.Empty;
 
+		#region Equality
+		public override Boolean Equals(Object versioned) => Equals(versioned as TVersioned);
+
+		public Boolean Equals(TVersioned versioned) {
+			if (ReferenceEquals(versioned, null))
+				return false;
+			if (ReferenceEquals(versioned, this))
+				return true;
+			return Id == versioned.Id
+			    && Modified == versioned.Modified
+			    && IsReadOnly == versioned.IsReadOnly
+			    && ValueEqualityComparer.Equals(Value, versioned.Value)
+			    && (ReferenceEquals(LocalVersions, versioned.LocalVersions) || LocalVersions.SequenceEqual(versioned.LocalVersions));
+		}
+
+		public override Int32 GetHashCode() {
+			var hash = 1374496523;
+			unchecked {
+				hash = (hash * -1521134295) + Id.GetHashCode();
+				hash = (hash * -1521134295) + Modified.GetHashCode();
+				hash = (hash * -1521134295) + Id.GetHashCode();
+				if (IsTValueAValueType || !ReferenceEquals(Value, null))
+					hash = (hash * -1521134295) + ValueEqualityComparer.GetHashCode(Value);
+			}
+			return hash;
+		}
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private static readonly Boolean IsTValueAValueType = typeof(TValue).GetTypeInfo().IsValueType;
+
+		protected virtual IEqualityComparer<TValue> ValueEqualityComparer => EqualityComparer<TValue>.Default;
+		#endregion
+		#region Id
 		/// <summary>Gets the unique identifier for this versioned property</summary>
 		public Guid Id {
 			get { return id; }
-			private set { NotifyChangeIfNotEqual(ref id, value, idPropertyChangingEventArgs, idPropertyChangedEventArgs); }
+			internal set { NotifyChangeIfNotEqual(ref id, value, idPropertyChangingEventArgs, idPropertyChangedEventArgs); }
 		}
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Guid id;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs idPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Id));
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs idPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Id));
-
+		#endregion
+		#region Modified
 		/// <summary>Gets the date-time representing when this versioned property was last modified</summary>
-		public DateTime Modified {
+		public DateTime? Modified {
 			get { return modified; }
 			internal set { NotifyChangeIfNotEqual(ref modified, value, modifiedPropertyChangingEventArgs, modifiedPropertyChangedEventArgs); }
 		}
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private DateTime modified;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private DateTime? modified;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs modifiedPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Modified));
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs modifiedPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Modified));
-
+		#endregion
+		#region IsReadOnly
 		/// <summary>Gets a boolean indicating the read-only state of <see cref="Value"/></summary>
 		[NotMapped]
 		public Boolean IsReadOnly {
@@ -64,23 +111,22 @@ namespace EntityFramework.VersionedProperties {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Boolean isReadOnly;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs isReadOnlyPropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(IsReadOnly));
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs isReadOnlyPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(IsReadOnly));
-
-		/// <summary>Gets or sets the value of this versioned property (the previous value is pushed into the versions collection for <see cref="TVersion"/> in <see cref="TIVersions"/>)</summary>
+		#endregion
+		#region Value
+		/// <summary>Gets or sets the value of this versioned property (the previous value is pushed into <see cref="LocalVersions"/>, then into the versions set for <see cref="TVersion"/> in <see cref="TIVersions"/> once <see cref="DbContextWithTriggers.SaveChanges"/> is called)</summary>
 		public TValue Value {
 			get { return value; }
 			set {
 				if (IsReadOnly)
 					throw new InvalidOperationException("This object is in a read-only state, possibly because it is a snapshot of a previous state");
-				if (isInitialValue || Id != Guid.Empty)
-					isInitialValue = false;
-				else {
-					if (EqualityComparer<TValue>.Default.Equals(this.value, value))
+				if (Modified.HasValue) {
+					if (ValueEqualityComparer.Equals(this.value, value))
 						return;
 					if (Id == Guid.Empty)
 						Id = Guid.NewGuid();
 					internalLocalVersions.Add(new TVersion {
 						VersionedId = Id,
-						Added = Modified,
+						Added = Modified.Value,
 						Value = Value
 					});
 				}
@@ -91,30 +137,31 @@ namespace EntityFramework.VersionedProperties {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private TValue value;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangingEventArgs valuePropertyChangingEventArgs = new PropertyChangingEventArgs(nameof(Value));
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly PropertyChangedEventArgs valuePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Value));
-
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private Boolean isInitialValue;
-		
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly ObservableCollection<TVersion> internalLocalVersions;
-		
+		#endregion
+		#region LocalVersions
 		/// <summary>Gets the local versions (not yet persisted)</summary>
-		public ReadOnlyObservableCollection<TVersion> LocalVersions { get; }
-		
-#if !DEBUG
+		[NotMapped]
+		public ReadOnlyObservableCollection<TVersion> LocalVersions { get; private set; }
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#endif
-		protected virtual TValue DefaultValue => default(TValue);
+		private ObservableCollection<TVersion> internalLocalVersions;
+		#endregion
+		#region GetVersions
+		/// <summary>Gets the previous versions</summary>
+		public IOrderedQueryable<TVersion> GetVersions(TIVersions dbContext) => GetVersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
+
+		public static DbSet<TVersion> GetVersionDbSet(TIVersions dbContext) => GetVersionDbSetFunc(dbContext);
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private static readonly Func<TIVersions, DbSet<TVersion>> GetVersionDbSetFunc = typeof(TIVersions).GetProperties()
 		                                                                                                  .Single(x => x.PropertyType == typeof(DbSet<TVersion>))
 		                                                                                                  .GetPropertyGetter<TIVersions, DbSet<TVersion>>();
-		public static DbSet<TVersion> GetVersionDbSet(TIVersions dbContext) => GetVersionDbSetFunc(dbContext);
-
-		/// <summary>Gets the previous versions</summary>
-		/// <param name="dbContext"></param>
-		/// <returns></returns>
-		public IOrderedQueryable<TVersion> GetVersions(TIVersions dbContext) => GetVersionDbSet(dbContext).Where(x => x.VersionedId == Id).OrderByDescending(x => x.Added);
-
+		#endregion
+		
+		/// <summary>Gets the overridable default value which is assigned to the <see cref="Value"/> property on construction</summary>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		protected virtual TValue DefaultValue => default(TValue);
+		
 #if DEBUG && !NET_CORE
 		[DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
 		public IEnumerable<TVersion> Versions {
@@ -131,6 +178,8 @@ namespace EntityFramework.VersionedProperties {
 			var versions = CheckDbContext(dbContext);
 			GetVersionDbSet(versions).AddRange(internalLocalVersions);
 		}
+		
+		void IVersioned.OnInsertedOrUpdated() => internalLocalVersions.Clear();
 
 		void IVersioned.OnDeleted(DbContext dbContext) {
 			var versions = CheckDbContext(dbContext);
@@ -145,9 +194,6 @@ namespace EntityFramework.VersionedProperties {
 			throw new InvalidOperationException("Your DbContext class must implement " + typeof(TIVersions).FullName);
 		}
 
-		void IVersioned.OnInserted() => Id = Guid.NewGuid();
-		void IVersioned.OnInsertedOrUpdated() => internalLocalVersions.Clear();
-
 #if DEBUG
 		public void
 #else
@@ -158,11 +204,10 @@ namespace EntityFramework.VersionedProperties {
 			if (version == null)
 				return;
 			var v = (TVersion) version;
-			NotifyChangeIfNotEqual(ref value, v.Value, nameof(Value));
+			NotifyChangeIfNotEqual(ref value, v.Value, valuePropertyChangingEventArgs, valuePropertyChangedEventArgs);
 			Modified = v.Added;
 		}
 		#endregion
-
 		#region PropertyChange implementations
 		protected void NotifyChange<T>(ref T backingField, T newValue, PropertyChangingEventArgs propertyChangingEventArgs, PropertyChangedEventArgs propertyChangedEventArgs) {
 			OnPropertyChanging(propertyChangingEventArgs);
@@ -205,16 +250,60 @@ namespace EntityFramework.VersionedProperties {
 	}
 
 	public static class VersionedExtensions {
+		/// <summary>Sets the value of a versioned property (use this to set virtual VersionedX values so that change tracking is efficient)</summary>
+		public static void Set<TEntity, TVersioned, TValue, TVersion, TIVersions>(
+			this TEntity entity,
+			Expression<Func<TEntity, VersionedBase<TVersioned, TValue, TVersion, TIVersions>>> versionedProperty,
+			TValue newValue
+			)
+		where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>, new()
+		where TVersion : VersionBase<TValue>, new()
+		where TIVersions : class
+		where TEntity : class {
+			if (entity == null)
+				throw new ArgumentNullException(nameof(entity));
+			if (versionedProperty == null)
+				throw new ArgumentNullException(nameof(versionedProperty));
+
+			var propertyInfo = (versionedProperty.Body as MemberExpression)?.Member as PropertyInfo;
+			if (propertyInfo == null || propertyInfo.DeclaringType != typeof(TEntity))
+				throw new ArgumentException($"Must be a property of type {typeof(TVersioned).FullName} with declaring type {typeof(TEntity).FullName}", nameof(versionedProperty));
+
+			var accessors = VersionedSetterCache<TEntity, TVersioned>.GetAccessors(propertyInfo);
+			var versioned = accessors.Getter(entity);
+			accessors.Setter(entity, versioned.Clone());
+		}
+
+		private static class VersionedSetterCache<TEntity, TVersioned> {
+			private static readonly ConcurrentDictionary<PropertyInfo, Accessors> cache = new ConcurrentDictionary<PropertyInfo, Accessors>();
+			public static Accessors GetAccessors(PropertyInfo propertyInfo) => cache.GetOrAdd(propertyInfo, ValueFactory);
+
+			private static Accessors ValueFactory(PropertyInfo propertyInfo) {
+				return new Accessors {
+					Getter = propertyInfo.GetPropertyGetter<TEntity, TVersioned>(),
+					Setter = propertyInfo.GetPropertySetter<TEntity, TVersioned>()
+				};
+			}
+
+			public struct Accessors {
+				public Func<TEntity, TVersioned> Getter;
+				public Action<TEntity, TVersioned> Setter;
+			}
+			
+		}
+
+		/// <summary>Returns a collection of entities with their versioned properties as they were at the specified date-time</summary>
+		/// <remarks>Your source query is ammended with group joins, so that only one command is sent the to persistence layer</remarks>
 		public static ICollection<T> ToSnapshots<T>(this IQueryable<T> source, DbContext context, DateTime dateTime)
 		where T : class {
 			var vpis = EntityVersionedTypeCache<T>.VersionedTypeInfos;
 			if (!vpis.Any())
 				return source.ToArray();
-			
+
 			IQueryable query = source.Select(x => new Mutuple<T> { Item1 = x });
 			for (int i = 0; i < vpis.Length; i++) {
 				var vpi = vpis[i];
-				
+
 				//var queryableVersions = genericTypes.Versioned.GetMethod()
 				//query = query.ApplyGroupJoin(vpi, genericTypes);
 			}
@@ -240,7 +329,7 @@ namespace EntityFramework.VersionedProperties {
 		where T : class {
 			public static readonly PropertyInfo[] VersionedProperties = typeof(T).GetProperties().Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType)).ToArray();
 			//public static readonly GenericTypes[] GenericTypes = Vpis.Select(GetGenericTypes).ToArray();
-			public static readonly VersionedTypeInfo[] VersionedTypeInfos = VersionedProperties.Select((x,i) => new VersionedTypeInfo(x, GetGenericTypes(x), i)).ToArray();
+			public static readonly VersionedTypeInfo[] VersionedTypeInfos = VersionedProperties.Select((x, i) => new VersionedTypeInfo(x, GenericTypes.GetGenericTypes(x), i)).ToArray();
 
 			public class VersionedTypeInfo {
 				public VersionedTypeInfo(PropertyInfo propertyInfo, GenericTypes genericTypes, Int32 vpIndex) {
@@ -252,45 +341,44 @@ namespace EntityFramework.VersionedProperties {
 
 				public PropertyInfo PropertyInfo { get; }
 				public GenericTypes GenericTypes { get; }
-				public Int32        VpIndex      { get; }
-				public Type         MutupleType  { get; }
+				public Int32 VpIndex { get; }
+				public Type MutupleType { get; }
+			}
+
+			public struct GenericTypes {
+				public Type Versioned;
+				public Type Value;
+				public Type Version;
+				public Type IVersions;
+
+				public GenericTypes(Type[] genericArguments) : this(genericArguments[0], genericArguments[1], genericArguments[2], genericArguments[3]) { }
+				public GenericTypes(Type versioned, Type value, Type version, Type versions) {
+					Versioned = versioned;
+					Value = value;
+					Version = version;
+					IVersions = versions;
+				}
+
+				public static GenericTypes GetGenericTypes(PropertyInfo x) => new GenericTypes(GetVersionedBaseType(x.PropertyType).GetGenericArguments());
+
+				private static Type GetVersionedBaseType(Type type) {
+					while (!type.GetTypeInfo().IsGenericType || type.GetGenericTypeDefinition() != typeof(VersionedBase<,,,>))
+						type = type.GetTypeInfo().BaseType;
+					return type;
+				}
 			}
 		}
 
 		private static class VersionedBaseTypeCache<TVersioned, TValue, TVersion, TIVersions>
-		where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>
+		where TVersioned : VersionedBase<TVersioned, TValue, TVersion, TIVersions>, new()
 		where TVersion : VersionBase<TValue>, new()
 		where TIVersions : class {
 			//public static readonly MethodInfo GetVersionDbSetStaticMethodInfo
 			public static readonly Func<TIVersions, DbSet<TVersion>> GetVersionDbSetFunc = VersionedBase<TVersioned, TValue, TVersion, TIVersions>.GetVersionDbSet;
 
-
 			public static void What(TVersioned versioned) {
 				//var queryable = versioned.GetSnap
 			}
-		}
-
-		private struct GenericTypes {
-			public Type Versioned;
-			public Type Value;
-			public Type Version;
-			public Type IVersions;
-
-			public GenericTypes(Type[] genericArguments) : this(genericArguments[0], genericArguments[1], genericArguments[2], genericArguments[3]) {}
-			public GenericTypes(Type versioned, Type value, Type version, Type versions) {
-				Versioned = versioned;
-				Value = value;
-				Version = version;
-				IVersions = versions;
-			}
-		}
-
-		private static GenericTypes GetGenericTypes(PropertyInfo x) => new GenericTypes(GetVersionedBaseType(x.PropertyType).GetGenericArguments());
-
-		private static Type GetVersionedBaseType(Type type) {
-			while (!type.GetTypeInfo().IsGenericType || type.GetGenericTypeDefinition() != typeof(VersionedBase<,,,>))
-				type = type.GetTypeInfo().BaseType;
-			return type;
 		}
 	}
 }
