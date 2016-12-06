@@ -22,5 +22,9 @@ namespace EntityFramework.VersionedProperties {
 			return (Action<T, TProperty>) propertyInfo.GetSetMethod(nonPublic: true).CreateDelegate(typeof(Action<T, TProperty>));
 #endif
 		}
+
+#if NET40
+		public static MethodInfo GetMethodInfo(this Delegate del) => del.Method;
+#endif
 	}
 }
