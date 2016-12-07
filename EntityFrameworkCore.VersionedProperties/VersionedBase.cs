@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using Mutuples;
 using Z.EntityFramework.Plus;
 
@@ -304,12 +304,7 @@ namespace EntityFramework.VersionedProperties {
 			if (!vpis.Any())
 				return source.ToArray();
 
-			IQueryable query = source.Select(x => new Mutuple<T> { Item1 = x });
-			for (int i = 0; i < vpis.Length; i++) {
-				var vpi = vpis[i];
-				query = query.Provider.CreateQuery(Expression.Call(null, vpi.GroupJoinMethodInfo, query.Expression, vpi.GetInnerSourceExpressionFunc(context), vpi.OuterKeySelectorExpression, vpi.InnerKeySelectorExpression, vpi.ResultSelectorExpression));
-
-			}
+			var query = BuildQuery(source, context, dateTime, vpis);
 
 			// take Mutable<T, ...all the VPs of T...> and call SetSnapshotVersion(...) on all the VPs
 			IQueryable<T> result = null;
@@ -320,28 +315,37 @@ namespace EntityFramework.VersionedProperties {
 #if !NET40
 		public static async Task<ICollection<T>> ToSnapshotsAsync<T>(this IQueryable<T> source, DbContext context, DateTime dateTime)
 		where T : class {
-			var vpis = EntityVersionedTypeCache<T>.VersionedProperties;
+			var vpis = EntityVersionedTypeCache<T>.VersionedTypeInfos;
 			if (!vpis.Any())
 				return await source.ToArrayAsync();
-			IQueryable query = source.Select(x => new Mutuple<T> { Item1 = x });
+
+			var query = BuildQuery(source, context, dateTime, vpis);
+			
 			return await ((IQueryable<T>) query).ToArrayAsync();
 		}
 #endif
 
+		private static IQueryable BuildQuery<T>(IQueryable<T> queryable, DbContext context, DateTime dateTime, VersionedTypeInfo[] vpis) where T : class {
+			IQueryable query = queryable.Select(x => new Mutuple<T> { Item1 = x });
+			foreach (var vpi in vpis)
+				query = query.Provider.CreateQuery(Expression.Call(null, vpi.GroupJoinMethodInfo, query.Expression, vpi.GetInnerSourceExpressionFunc(context), vpi.OuterKeySelectorExpression, vpi.InnerKeySelectorExpression, vpi.ResultSelectorExpression));
+			var lastVpi = vpis.Last();
+			EntityVersionedTypeCache<T>.ThreadLocalDateTime = dateTime;
+			return query.Provider.CreateQuery(Expression.Call(null, lastVpi.SelectMethodInfo, query.Expression, lastVpi.SelectExpression));
+		}
+
 		private static class EntityVersionedTypeCache<T>
 		where T : class {
-			//public static ICollection
-
 			public static readonly Type[] MutupleTypes = typeof(Mutuple<>).GetTypeInfo().Assembly.GetTypes();
 
 			public static readonly PropertyInfo[] VersionedProperties = typeof(T).GetProperties().Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType)).ToArray();
 
-			public static readonly VersionedTypeInfo[] VersionedTypeInfos = Get();
+			public static readonly VersionedTypeInfo[] VersionedTypeInfos = CreateVersionedTypeInfos();
 
-			private static VersionedTypeInfo[] Get() {
-				var array = new VersionedTypeInfo[VersionedProperties.Length];
-				var enumerableTypes = new Type[array.Length];
-				for (var i = 0; i != array.Length; ++i) {
+			private static VersionedTypeInfo[] CreateVersionedTypeInfos() {
+				var vtis = new VersionedTypeInfo[VersionedProperties.Length];
+				var enumerableTypes = new Type[vtis.Length];
+				for (var i = 0; i != vtis.Length; ++i) {
 					var propertyInfo = VersionedProperties[i];
 					var genericTypes = GenericTypes.GetGenericTypes(propertyInfo);
 					enumerableTypes[i] = typeof(IEnumerable<>).MakeGenericType(genericTypes.Version);
@@ -350,8 +354,9 @@ namespace EntityFramework.VersionedProperties {
 					var vti = new VersionedTypeInfo();
 					vti.PropertyInfo = propertyInfo;
 					vti.GenericTypes = genericTypes;
-					vti.OuterType = i == 0 ? typeof(Mutuple<T>) : array[i - 1].ResultType;
-					vti.ResultType = MutupleTypes.Single(x => x.GetGenericArguments().Length == i + 2).MakeGenericType(allMutupleGenericTypes);
+					vti.MutupleType = MutupleTypes.Single(x => x.GetGenericArguments().Length == i + 2);
+					vti.OuterType = i == 0 ? typeof(Mutuple<T>) : vtis[i - 1].ResultType;
+					vti.ResultType = vti.MutupleType.MakeGenericType(allMutupleGenericTypes);
 
 					vti.GroupJoinMethodInfo = (MethodInfo) typeof(GroupJoinCache<,,,>).MakeGenericType(vti.OuterType, genericTypes.Version, typeof(Guid), vti.ResultType).GetField(nameof(GroupJoinCache<Object, Object, Object, Object>.GroupJoinMethodInfo)).GetValue(null);
 
@@ -374,53 +379,110 @@ namespace EntityFramework.VersionedProperties {
 					var innerKeySelector = Expression.Lambda(Expression.Property(param, nameof(BooleanVersion.VersionedId)), param);
 					vti.InnerKeySelectorExpression = Expression.Quote(innerKeySelector);
 
-					var parameterExpression2 = Expression.Parameter(vti.OuterType, "m");
-					var parameterExpression = Expression.Parameter(enumerableTypes[i], "vs");
-					var enumerableMemberAssignments = Enumerable.Range(0, i + 1).Select(x => Expression.Bind(vti.ResultType.GetProperty($"Item{x+1}"), Expression.Property(parameterExpression2, $"Item{x + 1}")));
-					var memberAssignments = enumerableMemberAssignments.Concat(new [] { Expression.Bind(vti.ResultType.GetProperty($"Item{i+2}"), parameterExpression) }).ToArray();
-					var resultSelector = Expression.Lambda(Expression.MemberInit(Expression.New(vti.ResultType), memberAssignments), parameterExpression2, parameterExpression);
+					var mutupleParameterExpression = Expression.Parameter(vti.OuterType, "m");
+					var versionsParameterExpression = Expression.Parameter(enumerableTypes[i], "vs");
+					var enumerableMemberAssignments = Enumerable.Range(0, i + 1).Select(x => Expression.Bind(vti.ResultType.GetProperty($"Item{x+1}"), Expression.Property(mutupleParameterExpression, $"Item{x + 1}")));
+					var memberAssignments = enumerableMemberAssignments.Concat(new [] { Expression.Bind(vti.ResultType.GetProperty($"Item{i+2}"), versionsParameterExpression) }).ToArray();
+					var resultSelector = Expression.Lambda(Expression.MemberInit(Expression.New(vti.ResultType), memberAssignments), mutupleParameterExpression, versionsParameterExpression);
 					vti.ResultSelectorExpression = Expression.Quote(resultSelector);
 
-					array[i] = vti;
+					vtis[i] = vti;
 				}
-				return array;
+
+				var last = vtis.Last();
+
+				last.SelectNewType = last.MutupleType.MakeGenericType(new[] { typeof(T) }.Concat(vtis.TakeWhile(x => x != null).Select(x => x.GenericTypes.Version)).ToArray());
+				last.SelectMethodInfo = (MethodInfo) typeof(SelectCache<,>).MakeGenericType(last.ResultType, last.SelectNewType).GetField(nameof(SelectCache<Object, Object>.SelectMethodInfo)).GetValue(null);
+				var parameterExpression = Expression.Parameter(last.ResultType, "m");
+				var newExpression = Expression.New(last.SelectNewType);
+
+				var t = Expression.Bind(last.SelectNewType.GetProperty(nameof(Mutuple<Object>.Item1)), Expression.Property(parameterExpression, last.ResultType.GetProperty(nameof(Mutuple<Object>.Item1))));
+				var memberBindingExpressions = new [] { t }.Concat(vtis.Select((x, i) => {
+					var firstOrDefaultMethodInfo = (MethodInfo) typeof(FirstOrDefaultCache<>).MakeGenericType(x.GenericTypes.Version).GetField(nameof(FirstOrDefaultCache<Object>.FirstOrDefaultMethodInfo)).GetValue(null);
+					var orderByMethodInfo = (MethodInfo) typeof(OrderByDateTimeCache<>).MakeGenericType(x.GenericTypes.Version).GetField(nameof(OrderByDateTimeCache<Object>.OrderByMethodInfo)).GetValue(null);
+					var versionParameterExpression = Expression.Parameter(x.GenericTypes.Version, "x");
+					return Expression.Bind(last.SelectNewType.GetProperty($"Item{i + 2}"),
+						Expression.Call(
+							null,
+							firstOrDefaultMethodInfo,
+							Expression.Call(
+								null,
+								orderByMethodInfo,
+								Expression.Property(parameterExpression, $"Item{i + 2}"),
+								Expression.Lambda(
+									Expression.Property(
+										versionParameterExpression, nameof(VersionBase<Object>.Added)
+									), 
+									versionParameterExpression
+								)
+							),
+							Expression.Lambda(
+								Expression.GreaterThanOrEqual(
+									Expression.Property(versionParameterExpression, nameof(VersionBase<Object>.Added)),
+									Expression.Property(null, typeof(EntityVersionedTypeCache<>).MakeGenericType(typeof(T)).GetProperty(nameof(ThreadLocalDateTime))),
+									//Expression.Constant(DateTime.UtcNow, typeof(DateTime)),
+									false, // liftToNull
+									typeof(DateTime).GetMethod("op_GreaterThanOrEqual")
+								),
+								versionParameterExpression
+							)
+						)
+					);
+				}));
+
+				var selector = Expression.Lambda(
+					Expression.MemberInit(newExpression, memberBindingExpressions),
+					parameterExpression
+				);
+				last.SelectExpression = Expression.Quote(selector);
+
+				return vtis;
 			}
 
-			public class VersionedTypeInfo {
-				public PropertyInfo PropertyInfo { get; set; }
-				public GenericTypes GenericTypes { get; set; }
-				public Int32 VpIndex { get; set; }
-				public Type MutupleType { get; set; }
-				public Type OuterType { get; set; }
-				public Type ResultType { get; set; }
-				public UnaryExpression OuterKeySelectorExpression { get; set; }
-				public UnaryExpression InnerKeySelectorExpression { get; set; }
-				public UnaryExpression ResultSelectorExpression { get; set; }
-				public MethodInfo GroupJoinMethodInfo { get; set; }
-				public Func<DbContext, Expression> GetInnerSourceExpressionFunc { get; set; }
+			private static readonly ThreadLocal<DateTime> threadLocalDateTime = new ThreadLocal<DateTime>();
+			public static DateTime ThreadLocalDateTime {
+				get { return threadLocalDateTime.Value; }
+				set { threadLocalDateTime.Value = value; }
+			}
+		}
+
+		private class VersionedTypeInfo {
+			public PropertyInfo PropertyInfo { get; set; }
+			public GenericTypes GenericTypes { get; set; }
+			public Int32 VpIndex { get; set; }
+			public Type MutupleType { get; set; }
+			public Type OuterType { get; set; }
+			public Type ResultType { get; set; }
+			public UnaryExpression OuterKeySelectorExpression { get; set; }
+			public UnaryExpression InnerKeySelectorExpression { get; set; }
+			public UnaryExpression ResultSelectorExpression { get; set; }
+			public MethodInfo GroupJoinMethodInfo { get; set; }
+			public Func<DbContext, Expression> GetInnerSourceExpressionFunc { get; set; }
+			public Type SelectNewType { get; set; }
+			public MethodInfo SelectMethodInfo { get; set; }
+			public UnaryExpression SelectExpression { get; set; }
+		}
+
+		private struct GenericTypes {
+			public Type Versioned;
+			public Type Value;
+			public Type Version;
+			public Type IVersions;
+
+			public GenericTypes(Type[] genericArguments) : this(genericArguments[0], genericArguments[1], genericArguments[2], genericArguments[3]) { }
+			public GenericTypes(Type versioned, Type value, Type version, Type versions) {
+				Versioned = versioned;
+				Value = value;
+				Version = version;
+				IVersions = versions;
 			}
 
-			public struct GenericTypes {
-				public Type Versioned;
-				public Type Value;
-				public Type Version;
-				public Type IVersions;
+			public static GenericTypes GetGenericTypes(PropertyInfo x) => new GenericTypes(GetVersionedBaseType(x.PropertyType).GetGenericArguments());
 
-				public GenericTypes(Type[] genericArguments) : this(genericArguments[0], genericArguments[1], genericArguments[2], genericArguments[3]) { }
-				public GenericTypes(Type versioned, Type value, Type version, Type versions) {
-					Versioned = versioned;
-					Value = value;
-					Version = version;
-					IVersions = versions;
-				}
-
-				public static GenericTypes GetGenericTypes(PropertyInfo x) => new GenericTypes(GetVersionedBaseType(x.PropertyType).GetGenericArguments());
-
-				private static Type GetVersionedBaseType(Type type) {
-					while (!type.GetTypeInfo().IsGenericType || type.GetGenericTypeDefinition() != typeof(VersionedBase<,,,>))
-						type = type.GetTypeInfo().BaseType;
-					return type;
-				}
+			private static Type GetVersionedBaseType(Type type) {
+				while (!type.GetTypeInfo().IsGenericType || type.GetGenericTypeDefinition() != typeof(VersionedBase<,,,>))
+					type = type.GetTypeInfo().BaseType;
+				return type;
 			}
 		}
 
@@ -435,6 +497,21 @@ namespace EntityFramework.VersionedProperties {
 		private static class GroupJoinCache<TOuter, TInner, TKey, TResult> {
 			private static readonly Func<IQueryable<TOuter>, IEnumerable<TInner>, Expression<Func<TOuter, TKey>>, Expression<Func<TInner, TKey>>, Expression<Func<TOuter, IEnumerable<TInner>, TResult>>, IQueryable<TResult>> GroupJoinFunc = Queryable.GroupJoin;
 			public static readonly MethodInfo GroupJoinMethodInfo = GroupJoinFunc.GetMethodInfo();
+		}
+
+		private static class SelectCache<TSource, TResult> {
+			private static readonly Func<IQueryable<TSource>, Expression<Func<TSource, TResult>>, IQueryable<TResult>> SelectFunc = Queryable.Select;
+			public static readonly MethodInfo SelectMethodInfo = SelectFunc.GetMethodInfo();
+		}
+
+		private static class FirstOrDefaultCache<TSource> {
+			private static readonly Func<IEnumerable<TSource>, Func<TSource, Boolean>, TSource> FirstOrDefaultFunc = Enumerable.FirstOrDefault;
+			public static readonly MethodInfo FirstOrDefaultMethodInfo = FirstOrDefaultFunc.GetMethodInfo();
+		}
+
+		private static class OrderByDateTimeCache<TSource> {
+			private static readonly Func<IEnumerable<TSource>, Func<TSource, DateTime>, IOrderedEnumerable<TSource>> OrderByFunc = Enumerable.OrderBy;
+			public static readonly MethodInfo OrderByMethodInfo = OrderByFunc.GetMethodInfo();
 		}
 	}
 }
