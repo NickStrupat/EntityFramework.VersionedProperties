@@ -18,9 +18,11 @@ using System.Threading.Tasks;
 
 #if EF_CORE
 using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.Triggers;
 namespace EntityFrameworkCore.VersionedProperties {
 #else
 using System.Data.Entity;
+using EntityFramework.Triggers;
 namespace EntityFramework.VersionedProperties {
 #endif
 	[DebuggerDisplay("Value = {Value}")]
@@ -304,12 +306,8 @@ namespace EntityFramework.VersionedProperties {
 			if (!vpis.Any())
 				return source.ToArray();
 
-			var query = BuildQuery(source, context, dateTime, vpis);
-
-			// take Mutable<T, ...all the VPs of T...> and call SetSnapshotVersion(...) on all the VPs
-			IQueryable<T> result = null;
-
-			return result.ToArray();
+			var query = (IQueryable<Object>) BuildQuery(source, context, dateTime, vpis);
+			return SetSnapshots<T>(query.ToArray());
 		}
 
 #if !NET40
@@ -319,9 +317,8 @@ namespace EntityFramework.VersionedProperties {
 			if (!vpis.Any())
 				return await source.ToArrayAsync();
 
-			var query = BuildQuery(source, context, dateTime, vpis);
-			
-			return await ((IQueryable<T>) query).ToArrayAsync();
+			var query = (IQueryable<Object>) BuildQuery(source, context, dateTime, vpis);
+			return SetSnapshots<T>(await query.ToArrayAsync());
 		}
 #endif
 
@@ -333,6 +330,34 @@ namespace EntityFramework.VersionedProperties {
 			EntityVersionedTypeCache<T>.ThreadLocalDateTime = dateTime;
 			return query.Provider.CreateQuery(Expression.Call(null, lastVpi.SelectMethodInfo, query.Expression, lastVpi.SelectExpression));
 		}
+
+		private static ICollection<T> SetSnapshots<T>(Object[] results)
+		where T : class {
+			// take Mutable<T, ...all the VPs of T...> and call SetSnapshotVersion(...) on all the VPs
+			var snapshots = new T[results.Length];
+			for (var i = 0; i < results.Length; i++) {
+				var result = results[i];
+				var resultType = result.GetType();
+				var entity = resultType.GetProperty(nameof(Mutuple<Object>.Item1)).GetValue(result);
+				for (int ii = 0; ii < EntityVersionedTypeCache<T>.VersionedProperties.Length; ii++) {
+					var vpi = EntityVersionedTypeCache<T>.VersionedProperties[ii];
+					var property = vpi.GetValue(entity);
+					property.GetType().GetMethod(nameof(IVersioned.SetSnapshotVersion)).Invoke(property, new [] { resultType.GetProperty($"Item{ii+2}").GetValue(result) });
+				}
+				snapshots[i] = (T) entity;
+			}
+			return snapshots;
+		}
+
+		//private static class SnapshotCache<T>
+		//where T : class {
+		//	public static readonly Func<Object, T> Func = GetFunc();
+
+		//	private static Func<Object, T> GetFunc() {
+		//		var vpis = EntityVersionedTypeCache<T>.VersionedProperties;
+		//		var setters = vpis.Select(x => x.GetPropertySetter<>())
+		//	}
+		//}
 
 		private static class EntityVersionedTypeCache<T>
 		where T : class {
@@ -347,20 +372,24 @@ namespace EntityFramework.VersionedProperties {
 				var enumerableTypes = new Type[vtis.Length];
 				for (var i = 0; i != vtis.Length; ++i) {
 					var propertyInfo = VersionedProperties[i];
-					var genericTypes = GenericTypes.GetGenericTypes(propertyInfo);
-					enumerableTypes[i] = typeof(IEnumerable<>).MakeGenericType(genericTypes.Version);
+					var gts = GenericTypes.GetGenericTypes(propertyInfo);
+					enumerableTypes[i] = typeof(IEnumerable<>).MakeGenericType(gts.Version);
 					var allMutupleGenericTypes = new[] { typeof(T) }.Concat(enumerableTypes.TakeWhile(x => x != null)).ToArray();
 
 					var vti = new VersionedTypeInfo();
 					vti.PropertyInfo = propertyInfo;
-					vti.GenericTypes = genericTypes;
+					vti.GenericTypes = gts;
 					vti.MutupleType = MutupleTypes.Single(x => x.GetGenericArguments().Length == i + 2);
 					vti.OuterType = i == 0 ? typeof(Mutuple<T>) : vtis[i - 1].ResultType;
 					vti.ResultType = vti.MutupleType.MakeGenericType(allMutupleGenericTypes);
 
-					vti.GroupJoinMethodInfo = (MethodInfo) typeof(GroupJoinCache<,,,>).MakeGenericType(vti.OuterType, genericTypes.Version, typeof(Guid), vti.ResultType).GetField(nameof(GroupJoinCache<Object, Object, Object, Object>.GroupJoinMethodInfo)).GetValue(null);
+					vti.GroupJoinMethodInfo = (MethodInfo) typeof(GroupJoinCache<,,,>).MakeGenericType(vti.OuterType, gts.Version, typeof(Guid), vti.ResultType)
+						.GetField(nameof(GroupJoinCache<Object, Object, Object, Object>.GroupJoinMethodInfo))
+						.GetValue(null);
 
-					vti.GetInnerSourceExpressionFunc = (Func<DbContext, Expression>) typeof(VersionedBaseTypeCache<,,,>).MakeGenericType(vti.GenericTypes.Versioned, vti.GenericTypes.Value, vti.GenericTypes.Version, vti.GenericTypes.IVersions).GetField("GetSourceExpressionFunc").GetValue(null);
+					vti.GetInnerSourceExpressionFunc = (Func<DbContext, Expression>) typeof(VersionedBaseTypeCache<,,,>).MakeGenericType(gts.Versioned, gts.Value, gts.Version, gts.IVersions)
+						.GetField(nameof(VersionedBaseTypeCache <VersionedString, String, StringVersion, IStringVersions>.GetSourceExpressionFunc))
+						.GetValue(null);
 
 					var param = Expression.Parameter(vti.OuterType, "m");
 					var outerKeySelector =
@@ -372,7 +401,8 @@ namespace EntityFramework.VersionedProperties {
 								),
 								nameof(VersionedBoolean.Id)
 							),
-							param);
+							param
+						);
 					vti.OuterKeySelectorExpression = Expression.Quote(outerKeySelector);
 
 					param = Expression.Parameter(vti.GenericTypes.Version, "v");
@@ -419,8 +449,7 @@ namespace EntityFramework.VersionedProperties {
 							Expression.Lambda(
 								Expression.GreaterThanOrEqual(
 									Expression.Property(versionParameterExpression, nameof(VersionBase<Object>.Added)),
-									Expression.Property(null, typeof(EntityVersionedTypeCache<>).MakeGenericType(typeof(T)).GetProperty(nameof(ThreadLocalDateTime))),
-									//Expression.Constant(DateTime.UtcNow, typeof(DateTime)),
+									Expression.Property(null, typeof(EntityVersionedTypeCache<>).MakeGenericType(typeof(T)).GetProperty(nameof(ThreadLocalDateTime))), //Expression.Constant(DateTime.UtcNow, typeof(DateTime)),
 									false, // liftToNull
 									typeof(DateTime).GetMethod("op_GreaterThanOrEqual")
 								),
