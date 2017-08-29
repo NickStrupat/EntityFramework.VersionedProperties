@@ -1,7 +1,12 @@
 EntityFramework.VersionedProperties
 ==================================
 
-NuGet package listed on nuget.org at https://www.nuget.org/packages/EntityFramework.VersionedProperties/ [![NuGet Status](http://img.shields.io/nuget/v/EntityFramework.VersionedProperties.svg?style=flat)](https://www.nuget.org/packages/EntityFramework.VersionedProperties/)
+Simply install the NuGet package for EF6 or EF Core
+
+| EF version | .NET support                          | NuGet package                                                                                                                                                                    |
+|:-----------|:--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 6.1.3      | >= 4.6.1                              | [![NuGet Status](http://img.shields.io/nuget/v/EntityFramework.VersionedProperties.svg?style=flat)](https://www.nuget.org/packages/EntityFramework.VersionedProperties/)         |
+| Core 2.0   | >= 4.6.1 &#124;&#124; >= Standard 2.0 | [![NuGet Status](http://img.shields.io/nuget/v/EntityFrameworkCore.VersionedProperties.svg?style=flat)](https://www.nuget.org/packages/EntityFrameworkCore.VersionedProperties/) |
 
 VersionedProperties is a library for .NET developers using Entity Framework which makes it very easy to support fine-grained (down to the property) data versioning. Triggers are inherently supported as this project depends on some of the underlying features of https://github.com/NickStrupat/EntityFramework.Triggers.
 

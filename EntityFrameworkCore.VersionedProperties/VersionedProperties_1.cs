@@ -37,10 +37,11 @@ namespace EntityFramework.VersionedProperties {
 			}
 		}
 
-		private static readonly Func<TVersionedProperties, IVersioned>[] versionedPropertyGetters = typeof(TVersionedProperties).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-		                                                                                                                        .Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType))
-		                                                                                                                        .Select(ReflectionExtensions.GetPropertyGetter<TVersionedProperties, IVersioned>)
-		                                                                                                                        .ToArray();
+		private static readonly Func<TVersionedProperties, IVersioned>[] versionedPropertyGetters =
+            typeof(TVersionedProperties).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+		                                .Where(x => typeof(IVersioned).IsAssignableFrom(x.PropertyType))
+		                                .Select(ReflectionExtensions.GetPropertyGetter<TVersionedProperties, IVersioned>)
+		                                .ToArray();
 
 		private static void OnInsertingOrUpdating(IBeforeEntry<TVersionedProperties, TDbContext> entry) {
 			foreach (var versionedPropertyMapping in versionedPropertyGetters)
